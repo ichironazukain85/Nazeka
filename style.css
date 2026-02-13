@@ -113,6 +113,44 @@ body {
     background: #c73652;
 }
 
+/* --- Touch Controls (hidden on desktop) --- */
+.touch-controls {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 320px;
+}
+
+.touch-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.touch-btn {
+    flex: 1;
+    max-width: 100px;
+    height: 56px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #e0e0e0;
+    background: #16213e;
+    border: 2px solid #0f3460;
+    border-radius: 10px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    transition: background 0.1s;
+}
+
+.touch-btn:active {
+    background: #e94560;
+    border-color: #e94560;
+}
+
 .controls-info {
     margin-top: 20px;
     text-align: center;
@@ -125,4 +163,58 @@ body {
     padding: 8px 16px;
     border-radius: 6px;
     border: 1px solid #0f3460;
+}
+
+/* --- Mobile Responsive --- */
+@media (max-width: 600px) {
+    body {
+        justify-content: flex-start;
+        padding-top: 10px;
+        overflow: auto;
+    }
+
+    .game-container {
+        gap: 6px;
+        transform-origin: top center;
+    }
+
+    .side-panel {
+        min-width: 60px;
+        gap: 6px;
+    }
+
+    .hold-box,
+    .next-box,
+    .score-box,
+    .level-box,
+    .lines-box {
+        padding: 4px;
+    }
+
+    .hold-box h3,
+    .next-box h3,
+    .score-box h3,
+    .level-box h3,
+    .lines-box h3 {
+        font-size: 9px;
+        margin-bottom: 4px;
+    }
+
+    .score-box div,
+    .level-box div,
+    .lines-box div {
+        font-size: 16px;
+    }
+
+    .overlay-text {
+        font-size: 24px;
+    }
+
+    .touch-controls {
+        display: flex;
+    }
+
+    .controls-info {
+        display: none;
+    }
 }

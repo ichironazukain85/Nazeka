@@ -501,6 +501,105 @@
         startGame();
     });
 
+    // --- Touch Controls ---
+    function bindTouchBtn(id, action) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        let intervalId = null;
+
+        const start = (e) => {
+            e.preventDefault();
+            action();
+            // Repeat for directional buttons
+            if (id === "btnLeft" || id === "btnRight" || id === "btnDown") {
+                intervalId = setInterval(action, 100);
+            }
+        };
+        const stop = (e) => {
+            e.preventDefault();
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+        };
+
+        btn.addEventListener("touchstart", start, { passive: false });
+        btn.addEventListener("touchend", stop, { passive: false });
+        btn.addEventListener("touchcancel", stop, { passive: false });
+        // Mouse fallback for testing
+        btn.addEventListener("mousedown", start);
+        btn.addEventListener("mouseup", stop);
+        btn.addEventListener("mouseleave", stop);
+    }
+
+    bindTouchBtn("btnLeft", () => movePiece(-1, 0));
+    bindTouchBtn("btnRight", () => movePiece(1, 0));
+    bindTouchBtn("btnDown", () => {
+        if (movePiece(0, 1)) {
+            score += 1;
+            updateUI();
+        }
+    });
+    bindTouchBtn("btnRotate", () => rotatePiece(1));
+    bindTouchBtn("btnHardDrop", () => hardDrop());
+    bindTouchBtn("btnHold", () => holdCurrentPiece());
+
+    // --- Swipe on game canvas ---
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    gameCanvas.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTime = Date.now();
+    }, { passive: false });
+
+    gameCanvas.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        const t = e.changedTouches[0];
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+        const dt = Date.now() - touchStartTime;
+        const absDx = Math.abs(dx);
+        const absDy = Math.abs(dy);
+
+        if (absDx < 15 && absDy < 15 && dt < 300) {
+            // Tap = rotate
+            rotatePiece(1);
+        } else if (absDy > absDx && dy > 40) {
+            // Swipe down = hard drop
+            hardDrop();
+        }
+    }, { passive: false });
+
+    // Prevent scroll / zoom on mobile while playing
+    document.addEventListener("touchmove", (e) => {
+        if (e.target.closest(".game-container") || e.target.closest(".touch-controls")) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // --- Responsive Canvas Sizing ---
+    function resizeGame() {
+        const isMobile = window.innerWidth <= 600;
+        if (!isMobile) return;
+
+        const availWidth = window.innerWidth;
+        // Board takes ~55% of width, side panels take the rest
+        const boardWidth = Math.floor(availWidth * 0.55);
+        const scale = boardWidth / 300; // 300 = original canvas width
+
+        const container = document.querySelector(".game-container");
+        container.style.transform = `scale(${Math.min(scale, 1)})`;
+        container.style.transformOrigin = "top center";
+    }
+
+    window.addEventListener("resize", resizeGame);
+    resizeGame();
+
     function togglePause() {
         if (gameOver) return;
         paused = !paused;
