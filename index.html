@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テトリス</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="side-panel left-panel">
+            <div class="hold-box">
+                <h3>HOLD</h3>
+                <canvas id="holdCanvas" width="100" height="100"></canvas>
+            </div>
+        </div>
+        <div class="main-board">
+            <canvas id="gameCanvas" width="300" height="600"></canvas>
+            <div id="overlay" class="overlay hidden">
+                <div id="overlayText" class="overlay-text">GAME OVER</div>
+                <button id="restartBtn" class="restart-btn">もう一度プレイ</button>
+            </div>
+        </div>
+        <div class="side-panel right-panel">
+            <div class="next-box">
+                <h3>NEXT</h3>
+                <canvas id="nextCanvas" width="100" height="300"></canvas>
+            </div>
+            <div class="score-box">
+                <h3>SCORE</h3>
+                <div id="score">0</div>
+            </div>
+            <div class="level-box">
+                <h3>LEVEL</h3>
+                <div id="level">1</div>
+            </div>
+            <div class="lines-box">
+                <h3>LINES</h3>
+                <div id="lines">0</div>
+            </div>
+        </div>
+    </div>
+    <div class="controls-info">
+        <p>← → : 移動 &nbsp; ↑ : 回転 &nbsp; ↓ : 落下加速 &nbsp; Space : ハードドロップ &nbsp; C : ホールド &nbsp; P : 一時停止</p>
+    </div>
+    <script src="tetris.js"></script>
+</body>
+</html>
