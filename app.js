@@ -1,3 +1,44 @@
+// ===== PWA =====
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
+
+let deferredInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallBanner();
+});
+
+function showInstallBanner() {
+  if (document.querySelector(".install-banner")) return;
+
+  const banner = document.createElement("div");
+  banner.className = "install-banner";
+  banner.innerHTML = `
+    <div class="install-banner-text">
+      <strong>Nazeka をホーム画面に追加</strong>
+      <span>いつでもすぐに診断できます</span>
+    </div>
+    <button class="btn btn-primary" id="install-btn">追加</button>
+    <button class="install-banner-close" id="install-close">&times;</button>
+  `;
+  document.body.appendChild(banner);
+
+  document.getElementById("install-btn").addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    banner.remove();
+  });
+
+  document.getElementById("install-close").addEventListener("click", () => {
+    banner.remove();
+  });
+}
+
 // ===== State =====
 let currentQuestion = 0;
 let answers = {};
@@ -11,6 +52,8 @@ function showScreen(screenId) {
   screen.style.animation = "none";
   screen.offsetHeight; // force reflow
   screen.style.animation = "";
+  // Scroll to top on screen change
+  window.scrollTo(0, 0);
 }
 
 // ===== Quiz Flow =====

@@ -36,8 +36,13 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  min-height: 100dvh;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* ===== Layout ===== */
@@ -45,11 +50,16 @@ body {
   max-width: 640px;
   margin: 0 auto;
   padding: 24px 20px;
+  padding-top: calc(24px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(20px + env(safe-area-inset-left, 0px));
+  padding-right: calc(20px + env(safe-area-inset-right, 0px));
 }
 
 .screen {
   display: none;
   min-height: 100vh;
+  min-height: 100dvh;
   animation: fadeIn 0.5s ease;
 }
 
@@ -139,9 +149,11 @@ body {
   box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(108, 92, 231, 0.55);
+@media (hover: hover) {
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 28px rgba(108, 92, 231, 0.55);
+  }
 }
 
 .btn-primary:active {
@@ -154,9 +166,11 @@ body {
   border: 1px solid var(--border);
 }
 
-.btn-secondary:hover {
-  background: var(--bg-card-hover);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .btn-secondary:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+  }
 }
 
 /* ===== Progress Bar ===== */
@@ -229,14 +243,18 @@ body {
   transition: all 0.25s ease;
 }
 
-.option-btn:hover {
-  border-color: var(--primary);
-  background: var(--bg-card-hover);
-  transform: translateX(4px);
+@media (hover: hover) {
+  .option-btn:hover {
+    border-color: var(--primary);
+    background: var(--bg-card-hover);
+    transform: translateX(4px);
+  }
 }
 
 .option-btn:active {
-  transform: translateX(2px);
+  border-color: var(--primary);
+  background: var(--bg-card-hover);
+  transform: scale(0.98);
 }
 
 .option-btn.selected {
@@ -361,9 +379,11 @@ body {
   transition: all 0.25s ease;
 }
 
-.strength-tag:hover {
-  border-color: var(--primary);
-  transform: translateY(-2px);
+@media (hover: hover) {
+  .strength-tag:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
 }
 
 /* Dimension Chart */
@@ -454,10 +474,16 @@ body {
   transition: all 0.25s ease;
 }
 
-.job-card:hover {
+@media (hover: hover) {
+  .job-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+}
+
+.job-card:active {
   border-color: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
 }
 
 .job-card-header {
@@ -570,4 +596,57 @@ body {
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* ===== Install Banner ===== */
+.install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 16px 20px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 200;
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.install-banner-text {
+  flex: 1;
+}
+
+.install-banner-text strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+
+.install-banner-text span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.install-banner .btn {
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.install-banner-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
 }
