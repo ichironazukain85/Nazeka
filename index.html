@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nazeka - 性格診断で見つける あなたの天職</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- スタート画面 -->
+      <section id="start-screen" class="screen active">
+        <div class="container">
+          <div class="hero">
+            <div class="logo-mark">N</div>
+            <h1>Nazeka</h1>
+            <p class="tagline">性格診断で見つける、あなたの天職</p>
+            <p class="description">
+              12の質問に答えるだけで、あなたの性格タイプを分析し<br />
+              最適な仕事をご提案します
+            </p>
+            <button id="start-btn" class="btn btn-primary" onclick="startQuiz()">
+              診断をはじめる
+            </button>
+            <p class="note">所要時間：約3分 ｜ 全12問</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 質問画面 -->
+      <section id="quiz-screen" class="screen">
+        <div class="container">
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+          <p id="progress-text" class="progress-text">1 / 12</p>
+
+          <div id="question-card" class="question-card">
+            <h2 id="question-text" class="question-text"></h2>
+            <div id="options-container" class="options-container"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 分析中画面 -->
+      <section id="analyzing-screen" class="screen">
+        <div class="container">
+          <div class="analyzing">
+            <div class="spinner"></div>
+            <h2>あなたの性格を分析中...</h2>
+            <p id="analyzing-text">回答を集計しています</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 結果画面 -->
+      <section id="result-screen" class="screen">
+        <div class="container">
+          <div class="result-header">
+            <p class="result-label">あなたの性格タイプは</p>
+            <div id="result-emoji" class="result-emoji"></div>
+            <h1 id="result-type-name" class="result-type-name"></h1>
+            <span id="result-type-code" class="result-type-code"></span>
+          </div>
+
+          <div class="result-description">
+            <p id="result-description-text"></p>
+          </div>
+
+          <div class="strengths-section">
+            <h3>あなたの強み</h3>
+            <div id="strengths-list" class="strengths-list"></div>
+          </div>
+
+          <div class="dimension-bars">
+            <h3>性格スコア</h3>
+            <div id="dimension-chart" class="dimension-chart"></div>
+          </div>
+
+          <div class="jobs-section">
+            <h3>あなたにおすすめの仕事</h3>
+            <div id="jobs-list" class="jobs-list"></div>
+          </div>
+
+          <div class="result-actions">
+            <button class="btn btn-primary" onclick="resetQuiz()">
+              もう一度診断する
+            </button>
+            <button class="btn btn-secondary" onclick="shareResult()">
+              結果をシェア
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
