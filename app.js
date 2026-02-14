@@ -43,16 +43,21 @@ function showInstallBanner() {
 let currentQuestion = 0;
 let answers = {};
 
+// ===== Dimension Category Labels =====
+const dimensionLabels = {
+  EI: "外向性・内向性",
+  SN: "感覚・直感",
+  TF: "思考・感情",
+  JP: "判断・知覚",
+};
+
+const optionLetters = ["A", "B", "C", "D"];
+
 // ===== Screen Management =====
 function showScreen(screenId) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
   const screen = document.getElementById(screenId);
   screen.classList.add("active");
-  // Re-trigger animation
-  screen.style.animation = "none";
-  screen.offsetHeight; // force reflow
-  screen.style.animation = "";
-  // Scroll to top on screen change
   window.scrollTo(0, 0);
 }
 
@@ -64,6 +69,13 @@ function startQuiz() {
   renderQuestion();
 }
 
+function goBack() {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    renderQuestion();
+  }
+}
+
 function renderQuestion() {
   const q = questions[currentQuestion];
   const card = document.getElementById("question-card");
@@ -71,13 +83,21 @@ function renderQuestion() {
   // Animate card
   card.style.animation = "none";
   card.offsetHeight;
-  card.style.animation = "slideIn 0.4s ease";
+  card.style.animation = "cardSlideIn 0.5s cubic-bezier(0.22, 1, 0.36, 1)";
+
+  // Back button
+  const backBtn = document.getElementById("back-btn");
+  backBtn.disabled = currentQuestion === 0;
 
   // Progress
-  const progress = ((currentQuestion) / questions.length) * 100;
+  const progress = (currentQuestion / questions.length) * 100;
   document.getElementById("progress-fill").style.width = progress + "%";
   document.getElementById("progress-text").textContent =
     `${currentQuestion + 1} / ${questions.length}`;
+
+  // Category
+  document.getElementById("question-category").textContent =
+    dimensionLabels[q.dimension] || "";
 
   // Question text
   document.getElementById("question-text").textContent =
@@ -90,7 +110,10 @@ function renderQuestion() {
   q.options.forEach((opt, idx) => {
     const btn = document.createElement("button");
     btn.className = "option-btn";
-    btn.textContent = opt.text;
+    btn.innerHTML = `
+      <span class="option-label">${optionLetters[idx]}</span>
+      <span class="option-text">${opt.text}</span>
+    `;
     btn.addEventListener("click", () => selectOption(q.dimension, opt.score, btn));
     container.appendChild(btn);
   });
@@ -105,7 +128,6 @@ function selectOption(dimension, score, btn) {
   if (!answers[dimension]) {
     answers[dimension] = [];
   }
-  // Replace or add score for this question index within the dimension
   const dimQuestions = questions.filter((q) => q.dimension === dimension);
   const dimIndex = dimQuestions.indexOf(questions[currentQuestion]);
   answers[dimension][dimIndex] = score;
@@ -118,7 +140,7 @@ function selectOption(dimension, score, btn) {
     } else {
       showAnalyzing();
     }
-  }, 350);
+  }, 400);
 }
 
 // ===== Analysis =====
@@ -137,24 +159,26 @@ function showAnalyzing() {
   const interval = setInterval(() => {
     i++;
     if (i < messages.length) {
-      textEl.textContent = messages[i];
+      textEl.style.opacity = "0";
+      setTimeout(() => {
+        textEl.textContent = messages[i];
+        textEl.style.opacity = "1";
+      }, 150);
     } else {
       clearInterval(interval);
       showResult();
     }
-  }, 700);
+  }, 800);
 }
 
 function calculateType() {
   const scores = {};
 
-  // Calculate average score for each dimension
   for (const [dim, vals] of Object.entries(answers)) {
     const avg = vals.reduce((sum, v) => sum + v, 0) / vals.length;
     scores[dim] = avg;
   }
 
-  // Determine type letters
   const EI = (scores["EI"] || 0.5) >= 0.5 ? "E" : "I";
   const SN = (scores["SN"] || 0.5) >= 0.5 ? "N" : "S";
   const TF = (scores["TF"] || 0.5) >= 0.5 ? "F" : "T";
@@ -196,21 +220,27 @@ function showResult() {
   const jobsList = document.getElementById("jobs-list");
   jobsList.innerHTML = type.jobs
     .map(
-      (job) => `
+      (job, idx) => `
     <div class="job-card">
-      <div class="job-card-header">
-        <span class="job-title">${job.title}</span>
-        <span class="job-match ${job.match >= 90 ? "high" : "medium"}">
-          適性 ${job.match}%
-        </span>
+      <div class="job-rank job-rank--${idx + 1}">${idx + 1}</div>
+      <div class="job-card-body">
+        <div class="job-card-header">
+          <span class="job-title">${job.title}</span>
+          <span class="job-match ${job.match >= 90 ? "high" : "medium"}">
+            ${job.match}%
+          </span>
+        </div>
+        <p class="job-reason">${job.reason}</p>
       </div>
-      <p class="job-reason">${job.reason}</p>
     </div>
   `
     )
     .join("");
 
   showScreen("result-screen");
+
+  // Confetti
+  launchConfetti();
 
   // Store for sharing
   window._lastResult = { typeCode, type };
@@ -228,23 +258,89 @@ function renderDimensionChart(scores) {
   chart.innerHTML = dimensions
     .map((dim) => {
       const score = scores[dim.key] || 0.5;
-      // score 0 = fully left, 1 = fully right
       const leftWidth = Math.max(0, (0.5 - score) / 0.5) * 50;
       const rightWidth = Math.max(0, (score - 0.5) / 0.5) * 50;
+      const leftPct = Math.round((1 - score) * 100);
+      const rightPct = Math.round(score * 100);
 
       return `
       <div class="dimension-row">
         <span class="dimension-label left">${dim.left}</span>
+        <span class="dimension-percentage left-pct">${leftPct}%</span>
         <div class="dimension-bar-bg">
           <div class="dimension-bar-fill left-fill" style="width: ${leftWidth}%"></div>
           <div class="dimension-bar-fill right-fill" style="width: ${rightWidth}%"></div>
           <div class="dimension-bar-center"></div>
         </div>
+        <span class="dimension-percentage right-pct">${rightPct}%</span>
         <span class="dimension-label right">${dim.right}</span>
       </div>
     `;
     })
     .join("");
+}
+
+// ===== Confetti =====
+function launchConfetti() {
+  const canvas = document.getElementById("confetti-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ["#6c5ce7", "#fd79a8", "#00cec9", "#fdcb6e", "#a29bfe", "#fff"];
+  const particles = [];
+
+  for (let i = 0; i < 80; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height * -1,
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 4 + 2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 3,
+      vy: Math.random() * 3 + 2,
+      rotation: Math.random() * 360,
+      rotationSpeed: (Math.random() - 0.5) * 8,
+      opacity: 1,
+    });
+  }
+
+  let frame = 0;
+  const maxFrames = 180;
+
+  function animate() {
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (frame > maxFrames * 0.6) {
+      const fadeRatio = (frame - maxFrames * 0.6) / (maxFrames * 0.4);
+      particles.forEach((p) => (p.opacity = Math.max(0, 1 - fadeRatio)));
+    }
+
+    particles.forEach((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.05;
+      p.rotation += p.rotationSpeed;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (frame < maxFrames) {
+      requestAnimationFrame(animate);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  animate();
 }
 
 // ===== Actions =====

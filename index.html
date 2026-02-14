@@ -13,6 +13,13 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- Ambient background -->
+    <div class="bg-ambient">
+      <div class="bg-orb bg-orb--1"></div>
+      <div class="bg-orb bg-orb--2"></div>
+      <div class="bg-orb bg-orb--3"></div>
+    </div>
+
     <div id="app">
       <!-- スタート画面 -->
       <section id="start-screen" class="screen active">
@@ -36,12 +43,20 @@
       <!-- 質問画面 -->
       <section id="quiz-screen" class="screen">
         <div class="container">
-          <div class="progress-bar">
-            <div id="progress-fill" class="progress-fill"></div>
+          <div class="quiz-header">
+            <button id="back-btn" class="back-btn" onclick="goBack()" disabled>
+              &#8592;
+            </button>
+            <div class="progress-wrapper">
+              <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+              </div>
+            </div>
           </div>
           <p id="progress-text" class="progress-text">1 / 12</p>
 
           <div id="question-card" class="question-card">
+            <div id="question-category" class="question-category"></div>
             <h2 id="question-text" class="question-text"></h2>
             <div id="options-container" class="options-container"></div>
           </div>
@@ -52,7 +67,12 @@
       <section id="analyzing-screen" class="screen">
         <div class="container">
           <div class="analyzing">
-            <div class="spinner"></div>
+            <div class="pulse-container">
+              <div class="pulse-ring"></div>
+              <div class="pulse-ring"></div>
+              <div class="pulse-ring"></div>
+              <div class="pulse-core"></div>
+            </div>
             <h2>あなたの性格を分析中...</h2>
             <p id="analyzing-text">回答を集計しています</p>
           </div>
@@ -61,6 +81,7 @@
 
       <!-- 結果画面 -->
       <section id="result-screen" class="screen">
+        <canvas id="confetti-canvas"></canvas>
         <div class="container">
           <div class="result-header">
             <p class="result-label">あなたの性格タイプは</p>
@@ -73,18 +94,27 @@
             <p id="result-description-text"></p>
           </div>
 
-          <div class="strengths-section">
-            <h3>あなたの強み</h3>
+          <div class="result-section">
+            <h3>
+              <span class="section-icon section-icon--strengths">&#9733;</span>
+              あなたの強み
+            </h3>
             <div id="strengths-list" class="strengths-list"></div>
           </div>
 
-          <div class="dimension-bars">
-            <h3>性格スコア</h3>
+          <div class="result-section">
+            <h3>
+              <span class="section-icon section-icon--scores">&#9670;</span>
+              性格スコア
+            </h3>
             <div id="dimension-chart" class="dimension-chart"></div>
           </div>
 
-          <div class="jobs-section">
-            <h3>あなたにおすすめの仕事</h3>
+          <div class="result-section">
+            <h3>
+              <span class="section-icon section-icon--jobs">&#9733;</span>
+              あなたにおすすめの仕事
+            </h3>
             <div id="jobs-list" class="jobs-list"></div>
           </div>
 
