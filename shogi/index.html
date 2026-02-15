@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>将棋 - Shogi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <h1 class="game-title">将棋</h1>
+
+        <div class="game-layout">
+            <div class="board-area">
+                <div class="hand-area" id="hand-gote">
+                    <span class="hand-label">☖ 後手の持ち駒:</span>
+                    <div class="hand-pieces" id="hand-pieces-gote"></div>
+                </div>
+
+                <div class="board-wrapper">
+                    <div class="column-labels" id="column-labels"></div>
+                    <div class="board-with-rows">
+                        <div class="board" id="board"></div>
+                        <div class="row-labels" id="row-labels"></div>
+                    </div>
+                </div>
+
+                <div class="hand-area" id="hand-sente">
+                    <span class="hand-label">☗ 先手の持ち駒:</span>
+                    <div class="hand-pieces" id="hand-pieces-sente"></div>
+                </div>
+            </div>
+
+            <div class="side-panel">
+                <div class="status-area" id="status-area">
+                    <div class="status-text" id="status-text">先手の番です</div>
+                </div>
+
+                <div class="controls-area">
+                    <button class="control-btn" id="btn-new-game">新しい対局</button>
+                    <button class="control-btn" id="btn-undo">待った</button>
+                    <div class="mode-selector">
+                        <label class="mode-label">対局モード:</label>
+                        <select id="mode-select" class="mode-select">
+                            <option value="vs-ai">対AI</option>
+                            <option value="vs-human">対人</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="promotion-overlay" id="promotion-overlay">
+        <div class="promotion-dialog">
+            <p class="promotion-prompt">成りますか？</p>
+            <div class="promotion-buttons">
+                <button class="promotion-btn promote-yes" id="btn-promote-yes">成る</button>
+                <button class="promotion-btn promote-no" id="btn-promote-no">不成</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/game-logic.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
