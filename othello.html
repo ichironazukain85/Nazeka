@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>オセロ</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    user-select: none;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    color: #e0e0e0;
+    letter-spacing: 0.15em;
+}
+
+#info-bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.score-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.score-disc {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid #555;
+}
+
+.score-disc.black {
+    background: radial-gradient(circle at 35% 35%, #555, #111);
+}
+
+.score-disc.white {
+    background: radial-gradient(circle at 35% 35%, #fff, #bbb);
+}
+
+#turn-indicator {
+    font-weight: bold;
+    min-width: 180px;
+    text-align: center;
+}
+
+#board-container {
+    position: relative;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 2px;
+    background: #111;
+    border: 3px solid #333;
+    border-radius: 6px;
+    padding: 2px;
+    width: 480px;
+    height: 480px;
+}
+
+.cell {
+    background: #16613b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    border-radius: 2px;
+}
+
+.cell:hover {
+    background: #1e7a4c;
+}
+
+.cell.valid-move::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    position: absolute;
+}
+
+.disc {
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    transition: transform 0.4s ease;
+    position: relative;
+}
+
+.disc.black {
+    background: radial-gradient(circle at 35% 35%, #555, #111);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.5);
+}
+
+.disc.white {
+    background: radial-gradient(circle at 35% 35%, #fff, #bbb);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+}
+
+.disc.flip-animation {
+    animation: flip 0.4s ease-in-out;
+}
+
+@keyframes flip {
+    0%   { transform: rotateY(0deg) scale(1); }
+    50%  { transform: rotateY(90deg) scale(0.8); }
+    100% { transform: rotateY(0deg) scale(1); }
+}
+
+.disc.place-animation {
+    animation: place 0.3s ease-out;
+}
+
+@keyframes place {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+#controls {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+button {
+    background: #2d2d5e;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #3d3d7e;
+}
+
+select {
+    background: #2d2d5e;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#message-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    z-index: 10;
+}
+
+#message-overlay.visible {
+    display: flex;
+}
+
+#message-text {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    padding: 20px;
+}
+
+#pass-notice {
+    min-height: 1.5em;
+    margin-top: 8px;
+    font-size: 1rem;
+    color: #f0c040;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<h1>オセロ</h1>
+
+<div id="info-bar">
+    <div class="score-display">
+        <span class="score-disc black"></span>
+        <span>黒: <span id="black-score">2</span></span>
+    </div>
+    <div id="turn-indicator">黒のターン</div>
+    <div class="score-display">
+        <span class="score-disc white"></span>
+        <span>白: <span id="white-score">2</span></span>
+    </div>
+</div>
+
+<div id="board-container">
+    <div id="board"></div>
+    <div id="message-overlay">
+        <div id="message-text"></div>
+    </div>
+</div>
+
+<div id="pass-notice"></div>
+
+<div id="controls">
+    <select id="mode-select">
+        <option value="pvp">対人戦</option>
+        <option value="pvc-easy">CPU（弱い）</option>
+        <option value="pvc-normal" selected>CPU（普通）</option>
+        <option value="pvc-hard">CPU（強い）</option>
+    </select>
+    <select id="player-color">
+        <option value="black">先手（黒）</option>
+        <option value="white">後手（白）</option>
+    </select>
+    <button id="btn-restart">最初から</button>
+</div>
+
+<script>
+(function() {
+    "use strict";
+
+    var BLACK = 1;
+    var WHITE = -1;
+    var EMPTY = 0;
+    var DIRS = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1],           [0, 1],
+        [1, -1],  [1, 0],  [1, 1]
+    ];
+
+    var board = [];
+    var current_turn = BLACK;
+    var game_over = false;
+    var is_cpu_thinking = false;
+    var mode = "pvc-normal";
+    var player_color = BLACK;
+
+    var board_el = document.getElementById("board");
+    var black_score_el = document.getElementById("black-score");
+    var white_score_el = document.getElementById("white-score");
+    var turn_el = document.getElementById("turn-indicator");
+    var message_overlay = document.getElementById("message-overlay");
+    var message_text = document.getElementById("message-text");
+    var pass_notice = document.getElementById("pass-notice");
+    var mode_select = document.getElementById("mode-select");
+    var player_color_select = document.getElementById("player-color");
+    var btn_restart = document.getElementById("btn-restart");
+
+    function init_board() {
+        board = [];
+        for (var r = 0; r < 8; r++) {
+            board[r] = [];
+            for (var c = 0; c < 8; c++) {
+                board[r][c] = EMPTY;
+            }
+        }
+        board[3][3] = WHITE;
+        board[3][4] = BLACK;
+        board[4][3] = BLACK;
+        board[4][4] = WHITE;
+    }
+
+    function in_bounds(r, c) {
+        return r >= 0 && r < 8 && c >= 0 && c < 8;
+    }
+
+    function get_flips(b, r, c, color) {
+        if (b[r][c] !== EMPTY) return [];
+        var all_flips = [];
+        for (var d = 0; d < DIRS.length; d++) {
+            var dr = DIRS[d][0], dc = DIRS[d][1];
+            var flips = [];
+            var nr = r + dr, nc = c + dc;
+            while (in_bounds(nr, nc) && b[nr][nc] === -color) {
+                flips.push([nr, nc]);
+                nr += dr;
+                nc += dc;
+            }
+            if (flips.length > 0 && in_bounds(nr, nc) && b[nr][nc] === color) {
+                all_flips = all_flips.concat(flips);
+            }
+        }
+        return all_flips;
+    }
+
+    function get_valid_moves(b, color) {
+        var moves = [];
+        for (var r = 0; r < 8; r++) {
+            for (var c = 0; c < 8; c++) {
+                if (get_flips(b, r, c, color).length > 0) {
+                    moves.push([r, c]);
+                }
+            }
+        }
+        return moves;
+    }
+
+    function apply_move(b, r, c, color) {
+        var flips = get_flips(b, r, c, color);
+        if (flips.length === 0) return [];
+        b[r][c] = color;
+        for (var i = 0; i < flips.length; i++) {
+            b[flips[i][0]][flips[i][1]] = color;
+        }
+        return flips;
+    }
+
+    function count_pieces(b) {
+        var black_count = 0, white_count = 0;
+        for (var r = 0; r < 8; r++) {
+            for (var c = 0; c < 8; c++) {
+                if (b[r][c] === BLACK) black_count++;
+                else if (b[r][c] === WHITE) white_count++;
+            }
+        }
+        return { black: black_count, white: white_count };
+    }
+
+    function copy_board(b) {
+        var nb = [];
+        for (var r = 0; r < 8; r++) {
+            nb[r] = b[r].slice();
+        }
+        return nb;
+    }
+
+    // --- AI ---
+
+    var WEIGHT_MAP = [
+        [120, -20,  20,   5,   5,  20, -20, 120],
+        [-20, -40,  -5,  -5,  -5,  -5, -40, -20],
+        [ 20,  -5,  15,   3,   3,  15,  -5,  20],
+        [  5,  -5,   3,   3,   3,   3,  -5,   5],
+        [  5,  -5,   3,   3,   3,   3,  -5,   5],
+        [ 20,  -5,  15,   3,   3,  15,  -5,  20],
+        [-20, -40,  -5,  -5,  -5,  -5, -40, -20],
+        [120, -20,  20,   5,   5,  20, -20, 120]
+    ];
+
+    function evaluate(b, color) {
+        var score = 0;
+        var counts = count_pieces(b);
+        var total = counts.black + counts.white;
+
+        // positional weight
+        for (var r = 0; r < 8; r++) {
+            for (var c = 0; c < 8; c++) {
+                if (b[r][c] === color) score += WEIGHT_MAP[r][c];
+                else if (b[r][c] === -color) score -= WEIGHT_MAP[r][c];
+            }
+        }
+
+        // mobility
+        var my_moves = get_valid_moves(b, color).length;
+        var opp_moves = get_valid_moves(b, -color).length;
+        score += (my_moves - opp_moves) * 10;
+
+        // end game: maximize disc count
+        if (total > 55) {
+            var my_count = color === BLACK ? counts.black : counts.white;
+            var opp_count = color === BLACK ? counts.white : counts.black;
+            score += (my_count - opp_count) * 30;
+        }
+
+        return score;
+    }
+
+    function minimax(b, depth, alpha, beta, maximizing, ai_color) {
+        var color = maximizing ? ai_color : -ai_color;
+        var moves = get_valid_moves(b, color);
+
+        if (depth === 0) {
+            return { score: evaluate(b, ai_color), move: null };
+        }
+
+        if (moves.length === 0) {
+            var opp_moves = get_valid_moves(b, -color);
+            if (opp_moves.length === 0) {
+                // game over
+                var counts = count_pieces(b);
+                var my = ai_color === BLACK ? counts.black : counts.white;
+                var opp = ai_color === BLACK ? counts.white : counts.black;
+                if (my > opp) return { score: 10000 + my - opp, move: null };
+                if (my < opp) return { score: -10000 + my - opp, move: null };
+                return { score: 0, move: null };
+            }
+            // pass
+            return minimax(b, depth - 1, alpha, beta, !maximizing, ai_color);
+        }
+
+        var best_move = moves[0];
+
+        if (maximizing) {
+            var max_eval = -Infinity;
+            for (var i = 0; i < moves.length; i++) {
+                var nb = copy_board(b);
+                apply_move(nb, moves[i][0], moves[i][1], color);
+                var ev = minimax(nb, depth - 1, alpha, beta, false, ai_color).score;
+                if (ev > max_eval) {
+                    max_eval = ev;
+                    best_move = moves[i];
+                }
+                alpha = Math.max(alpha, ev);
+                if (beta <= alpha) break;
+            }
+            return { score: max_eval, move: best_move };
+        } else {
+            var min_eval = Infinity;
+            for (var i = 0; i < moves.length; i++) {
+                var nb = copy_board(b);
+                apply_move(nb, moves[i][0], moves[i][1], color);
+                var ev = minimax(nb, depth - 1, alpha, beta, true, ai_color).score;
+                if (ev < min_eval) {
+                    min_eval = ev;
+                    best_move = moves[i];
+                }
+                beta = Math.min(beta, ev);
+                if (beta <= alpha) break;
+            }
+            return { score: min_eval, move: best_move };
+        }
+    }
+
+    function get_ai_depth() {
+        var counts = count_pieces(board);
+        var total = counts.black + counts.white;
+        if (mode === "pvc-easy") return 1;
+        if (mode === "pvc-normal") {
+            if (total > 54) return 6;
+            return 3;
+        }
+        if (mode === "pvc-hard") {
+            if (total > 52) return 8;
+            if (total > 44) return 6;
+            return 5;
+        }
+        return 3;
+    }
+
+    function ai_move() {
+        if (game_over || is_cpu_thinking) return;
+        var moves = get_valid_moves(board, current_turn);
+        if (moves.length === 0) return;
+
+        is_cpu_thinking = true;
+
+        setTimeout(function() {
+            var depth = get_ai_depth();
+            var result = minimax(board, depth, -Infinity, Infinity, true, current_turn);
+            if (result.move) {
+                place_piece(result.move[0], result.move[1]);
+            }
+            is_cpu_thinking = false;
+        }, 200);
+    }
+
+    // --- Rendering ---
+
+    function create_board_dom() {
+        board_el.innerHTML = "";
+        for (var r = 0; r < 8; r++) {
+            for (var c = 0; c < 8; c++) {
+                var cell = document.createElement("div");
+                cell.className = "cell";
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+                cell.addEventListener("click", on_cell_click);
+                board_el.appendChild(cell);
+            }
+        }
+    }
+
+    function render() {
+        var valid_moves = game_over ? [] : get_valid_moves(board, current_turn);
+        var valid_set = {};
+        var show_hints = !is_cpu_turn();
+        for (var i = 0; i < valid_moves.length; i++) {
+            valid_set[valid_moves[i][0] + "," + valid_moves[i][1]] = true;
+        }
+
+        var cells = board_el.children;
+        for (var r = 0; r < 8; r++) {
+            for (var c = 0; c < 8; c++) {
+                var cell = cells[r * 8 + c];
+                var disc = cell.querySelector(".disc");
+
+                if (board[r][c] !== EMPTY) {
+                    if (!disc) {
+                        disc = document.createElement("div");
+                        disc.className = "disc";
+                        cell.appendChild(disc);
+                    }
+                    disc.className = "disc " + (board[r][c] === BLACK ? "black" : "white");
+                } else {
+                    if (disc) cell.removeChild(disc);
+                }
+
+                if (show_hints && valid_set[r + "," + c]) {
+                    cell.classList.add("valid-move");
+                } else {
+                    cell.classList.remove("valid-move");
+                }
+            }
+        }
+
+        var counts = count_pieces(board);
+        black_score_el.textContent = counts.black;
+        white_score_el.textContent = counts.white;
+
+        if (!game_over) {
+            turn_el.textContent = (current_turn === BLACK ? "黒" : "白") + "のターン";
+        }
+    }
+
+    function animate_place(r, c) {
+        var cell = board_el.children[r * 8 + c];
+        var disc = cell.querySelector(".disc");
+        if (disc) {
+            disc.classList.add("place-animation");
+            setTimeout(function() { disc.classList.remove("place-animation"); }, 300);
+        }
+    }
+
+    function animate_flips(flips, new_color) {
+        for (var i = 0; i < flips.length; i++) {
+            (function(fr, fc) {
+                setTimeout(function() {
+                    var cell = board_el.children[fr * 8 + fc];
+                    var disc = cell.querySelector(".disc");
+                    if (disc) {
+                        disc.classList.add("flip-animation");
+                        setTimeout(function() {
+                            disc.className = "disc " + (new_color === BLACK ? "black" : "white");
+                            disc.classList.remove("flip-animation");
+                        }, 200);
+                    }
+                }, i * 60);
+            })(flips[i][0], flips[i][1]);
+        }
+    }
+
+    // --- Game Logic ---
+
+    function is_cpu_turn() {
+        if (mode === "pvp") return false;
+        return current_turn !== player_color;
+    }
+
+    function place_piece(r, c) {
+        var flips = get_flips(board, r, c, current_turn);
+        if (flips.length === 0) return false;
+
+        var color = current_turn;
+        apply_move(board, r, c, current_turn);
+        render();
+        animate_place(r, c);
+        animate_flips(flips, color);
+
+        pass_notice.textContent = "";
+
+        // switch turn
+        current_turn = -current_turn;
+        var next_moves = get_valid_moves(board, current_turn);
+
+        if (next_moves.length === 0) {
+            var opp_moves = get_valid_moves(board, -current_turn);
+            if (opp_moves.length === 0) {
+                end_game();
+                return true;
+            }
+            // pass
+            pass_notice.textContent = (current_turn === BLACK ? "黒" : "白") + "は置ける場所がありません。パスします。";
+            current_turn = -current_turn;
+        }
+
+        render();
+
+        if (!game_over && is_cpu_turn()) {
+            ai_move();
+        }
+
+        return true;
+    }
+
+    function end_game() {
+        game_over = true;
+        var counts = count_pieces(board);
+        var msg;
+        if (counts.black > counts.white) {
+            msg = "黒の勝ち!\n" + counts.black + " - " + counts.white;
+        } else if (counts.white > counts.black) {
+            msg = "白の勝ち!\n" + counts.white + " - " + counts.black;
+        } else {
+            msg = "引き分け!\n" + counts.black + " - " + counts.white;
+        }
+        turn_el.textContent = "ゲーム終了";
+        message_text.textContent = msg;
+        message_overlay.classList.add("visible");
+    }
+
+    function on_cell_click(e) {
+        if (game_over || is_cpu_thinking) return;
+        if (is_cpu_turn()) return;
+
+        var r = parseInt(e.currentTarget.dataset.row);
+        var c = parseInt(e.currentTarget.dataset.col);
+        place_piece(r, c);
+    }
+
+    function restart_game() {
+        game_over = false;
+        is_cpu_thinking = false;
+        current_turn = BLACK;
+        mode = mode_select.value;
+        player_color = player_color_select.value === "white" ? WHITE : BLACK;
+        pass_notice.textContent = "";
+        message_overlay.classList.remove("visible");
+        init_board();
+        render();
+
+        if (is_cpu_turn()) {
+            ai_move();
+        }
+    }
+
+    // --- Event listeners ---
+
+    btn_restart.addEventListener("click", restart_game);
+    mode_select.addEventListener("change", function() {
+        mode = mode_select.value;
+        if (mode === "pvp") {
+            player_color_select.disabled = true;
+        } else {
+            player_color_select.disabled = false;
+        }
+        restart_game();
+    });
+    player_color_select.addEventListener("change", restart_game);
+
+    message_overlay.addEventListener("click", function() {
+        message_overlay.classList.remove("visible");
+    });
+
+    // --- Init ---
+    create_board_dom();
+    restart_game();
+})();
+</script>
+
+</body>
+</html>
