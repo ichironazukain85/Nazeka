@@ -94,8 +94,9 @@ const App = {
 
         this.renderer = new THREE.WebGLRenderer({
             canvas,
-            antialias: true,
-            alpha: false
+            antialias: !Touch.isMobile,
+            alpha: false,
+            powerPreference: 'high-performance'
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, Touch.isMobile ? 1.5 : 2));
@@ -112,6 +113,19 @@ const App = {
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
             this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // iOS WebGL context lost recovery
+        canvas.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            this.isRunning = false;
+        });
+        canvas.addEventListener('webglcontextrestored', () => {
+            if (this.scene && this.camera) {
+                this.isRunning = true;
+                this.clock.getDelta();
+                this._loop();
+            }
         });
     },
 

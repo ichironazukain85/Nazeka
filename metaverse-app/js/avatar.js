@@ -5,14 +5,54 @@
 const Avatar = {
     avatars: new Map(), // id -> { group, nameLabel, emoteLabel, config }
 
+    // Capsule shape compatible with Three.js r128 (CapsuleGeometry was added in r138)
+    _createCapsuleGeo(radius, halfHeight, capSegs, radialSegs) {
+        const top = new THREE.SphereGeometry(radius, radialSegs, capSegs, 0, Math.PI * 2, 0, Math.PI / 2);
+        const mid = new THREE.CylinderGeometry(radius, radius, halfHeight, radialSegs, 1, true);
+        const bot = new THREE.SphereGeometry(radius, radialSegs, capSegs, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
+
+        top.translate(0, halfHeight / 2, 0);
+        bot.translate(0, -halfHeight / 2, 0);
+
+        const merged = new THREE.BufferGeometry();
+        const geoms = [top, mid, bot].map(g => {
+            const pos = g.getAttribute('position').array;
+            const norm = g.getAttribute('normal').array;
+            const idx = g.index ? Array.from(g.index.array) : [];
+            return { pos, norm, idx };
+        });
+
+        let totalVerts = 0;
+        let totalIdx = 0;
+        geoms.forEach(g => { totalVerts += g.pos.length / 3; totalIdx += g.idx.length; });
+
+        const positions = new Float32Array(totalVerts * 3);
+        const normals = new Float32Array(totalVerts * 3);
+        const indices = [];
+        let vertOffset = 0;
+        let idxOffset = 0;
+
+        geoms.forEach(g => {
+            positions.set(g.pos, vertOffset * 3);
+            normals.set(g.norm, vertOffset * 3);
+            g.idx.forEach(i => indices.push(i + vertOffset));
+            vertOffset += g.pos.length / 3;
+        });
+
+        merged.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        merged.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+        merged.setIndex(indices);
+        return merged;
+    },
+
     create(scene, config) {
         const { id, name, color, x, z } = config;
         const colorHex = typeof color === 'string' ? parseInt(color.replace('#', '0x')) : color;
 
         const group = new THREE.Group();
 
-        // Body
-        const bodyGeo = new THREE.CapsuleGeometry(0.5, 1, 4, 12);
+        // Body (capsule shape built from sphere halves + cylinder)
+        const bodyGeo = this._createCapsuleGeo(0.5, 1, 4, 12);
         const bodyMat = new THREE.MeshStandardMaterial({
             color: colorHex,
             roughness: 0.6,
@@ -52,8 +92,8 @@ const Avatar = {
             group.add(pupil);
         });
 
-        // Arms
-        const armGeo = new THREE.CapsuleGeometry(0.15, 0.6, 4, 8);
+        // Arms (capsule shape)
+        const armGeo = this._createCapsuleGeo(0.15, 0.6, 4, 8);
         const armMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.6 });
         [-0.7, 0.7].forEach(offsetX => {
             const arm = new THREE.Mesh(armGeo, armMat);
@@ -111,6 +151,21 @@ const Avatar = {
         return avatarData;
     },
 
+    _drawRoundedRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        ctx.fill();
+    },
+
     _createTextSprite(text, bgColor) {
         const canvas = document.createElement('canvas');
         canvas.width = 256;
@@ -121,8 +176,7 @@ const Avatar = {
 
         if (text) {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            ctx.roundRect(8, 8, 240, 48, 8);
-            ctx.fill();
+            this._drawRoundedRect(ctx, 8, 8, 240, 48, 8);
 
             ctx.font = 'bold 24px sans-serif';
             ctx.textAlign = 'center';
@@ -151,8 +205,7 @@ const Avatar = {
 
         ctx.clearRect(0, 0, 256, 64);
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.roundRect(8, 8, 240, 48, 8);
-        ctx.fill();
+        this._drawRoundedRect(ctx, 8, 8, 240, 48, 8);
 
         ctx.font = '28px sans-serif';
         ctx.textAlign = 'center';

@@ -14,7 +14,11 @@ body {
     color: #e0e0e0;
     overflow: hidden;
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
+    /* Prevent pull-to-refresh and bounce on iOS */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
 }
 
 .hidden {
@@ -28,6 +32,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
+    height: 100dvh;
     background: linear-gradient(135deg, #0a0a2e 0%, #1a1a3e 50%, #0d0d2a 100%);
     animation: lobby-bg 8s ease-in-out infinite alternate;
 }
@@ -198,6 +203,8 @@ body {
     position: relative;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
+    touch-action: none;
 }
 
 #metaverse-canvas {
