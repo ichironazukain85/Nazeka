@@ -65,19 +65,31 @@ const App = {
     // ── World Entry ──────────────────────
 
     _enterWorld() {
+        if (typeof THREE === 'undefined') {
+            alert('3D engine not loaded. Please refresh the page.');
+            return;
+        }
+
         document.getElementById('lobby-screen').classList.add('hidden');
         document.getElementById('world-screen').classList.remove('hidden');
 
-        Touch.detect();
-        this._initThree();
-        this._initSystems();
-        this._buildWorld();
-        this._spawnPlayer();
-        this._spawnNPCs();
-        this._setupHUD();
+        try {
+            Touch.detect();
+            this._initThree();
+            this._initSystems();
+            this._buildWorld();
+            this._spawnPlayer();
+            this._spawnNPCs();
+            this._setupHUD();
 
-        this.isRunning = true;
-        this._loop();
+            this.isRunning = true;
+            this._loop();
+        } catch (err) {
+            console.error('Failed to initialize 3D world:', err);
+            document.getElementById('world-screen').classList.add('hidden');
+            document.getElementById('lobby-screen').classList.remove('hidden');
+            alert('Failed to start 3D world: ' + err.message);
+        }
     },
 
     _initThree() {
@@ -104,7 +116,7 @@ const App = {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.0;
+        this.renderer.toneMappingExposure = 1.5;
 
         this.clock = new THREE.Clock();
 
@@ -262,5 +274,18 @@ const App = {
 // ── Bootstrap ────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('loading-overlay');
+
+    // Check if Three.js loaded
+    if (typeof THREE === 'undefined') {
+        document.getElementById('loading-text').textContent =
+            'Error: 3D engine failed to load. Please refresh the page.';
+        return;
+    }
+
+    // Hide loading overlay
+    overlay.classList.add('fade-out');
+    setTimeout(() => { overlay.style.display = 'none'; }, 600);
+
     App.init();
 });

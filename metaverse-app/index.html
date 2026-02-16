@@ -108,8 +108,30 @@
         </div>
     </div>
 
-    <!-- Three.js from CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p id="loading-text">Loading...</p>
+    </div>
+
+    <!-- Three.js from CDN (with fallback) -->
+    <script>
+        window.THREE_LOADED = false;
+        window.addEventListener('error', function(e) {
+            if (e.target && e.target.tagName === 'SCRIPT') {
+                document.getElementById('loading-text').textContent =
+                    'Failed to load: ' + (e.target.src || 'script') + '. Please refresh.';
+                document.getElementById('loading-overlay').style.display = 'flex';
+            }
+        }, true);
+    </script>
+    <script src="https://unpkg.com/three@0.128.0/build/three.min.js"
+            onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'"></script>
+    <script>
+        if (typeof THREE !== 'undefined') {
+            window.THREE_LOADED = true;
+        }
+    </script>
     <script src="js/utils.js"></script>
     <script src="js/world.js"></script>
     <script src="js/avatar.js"></script>
