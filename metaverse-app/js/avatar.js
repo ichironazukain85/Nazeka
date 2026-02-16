@@ -1,49 +1,10 @@
 /* ========================================
-   avatar.js — Avatar creation and management
+   avatar.js — Cute egg/bean avatar (Metapa-style)
+   Big round head, small body, dot eyes
    ======================================== */
 
 const Avatar = {
-    avatars: new Map(), // id -> { group, nameLabel, emoteLabel, config }
-
-    // Capsule shape compatible with Three.js r128 (CapsuleGeometry was added in r138)
-    _createCapsuleGeo(radius, halfHeight, capSegs, radialSegs) {
-        const top = new THREE.SphereGeometry(radius, radialSegs, capSegs, 0, Math.PI * 2, 0, Math.PI / 2);
-        const mid = new THREE.CylinderGeometry(radius, radius, halfHeight, radialSegs, 1, true);
-        const bot = new THREE.SphereGeometry(radius, radialSegs, capSegs, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2);
-
-        top.translate(0, halfHeight / 2, 0);
-        bot.translate(0, -halfHeight / 2, 0);
-
-        const merged = new THREE.BufferGeometry();
-        const geoms = [top, mid, bot].map(g => {
-            const pos = g.getAttribute('position').array;
-            const norm = g.getAttribute('normal').array;
-            const idx = g.index ? Array.from(g.index.array) : [];
-            return { pos, norm, idx };
-        });
-
-        let totalVerts = 0;
-        let totalIdx = 0;
-        geoms.forEach(g => { totalVerts += g.pos.length / 3; totalIdx += g.idx.length; });
-
-        const positions = new Float32Array(totalVerts * 3);
-        const normals = new Float32Array(totalVerts * 3);
-        const indices = [];
-        let vertOffset = 0;
-        let idxOffset = 0;
-
-        geoms.forEach(g => {
-            positions.set(g.pos, vertOffset * 3);
-            normals.set(g.norm, vertOffset * 3);
-            g.idx.forEach(i => indices.push(i + vertOffset));
-            vertOffset += g.pos.length / 3;
-        });
-
-        merged.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        merged.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
-        merged.setIndex(indices);
-        return merged;
-    },
+    avatars: new Map(),
 
     create(scene, config) {
         const { id, name, color, x, z } = config;
@@ -51,78 +12,96 @@ const Avatar = {
 
         const group = new THREE.Group();
 
-        // Body (capsule shape built from sphere halves + cylinder)
-        const bodyGeo = this._createCapsuleGeo(0.5, 1, 4, 12);
+        // Body — egg/bean shape (wider bottom sphere + upper body)
+        const bodyGeo = new THREE.SphereGeometry(0.55, 16, 16);
+        bodyGeo.scale(1, 1.2, 0.9);
         const bodyMat = new THREE.MeshStandardMaterial({
             color: colorHex,
-            roughness: 0.6,
-            metalness: 0.2
+            roughness: 0.85,
+            metalness: 0.0
         });
         const body = new THREE.Mesh(bodyGeo, bodyMat);
-        body.position.y = 1.5;
+        body.position.y = 0.9;
         body.castShadow = true;
         group.add(body);
 
-        // Head
-        const headGeo = new THREE.SphereGeometry(0.45, 16, 16);
+        // Head — big and round (Metapa proportions: head > body)
+        const headGeo = new THREE.SphereGeometry(0.65, 20, 20);
         const headMat = new THREE.MeshStandardMaterial({
             color: colorHex,
-            roughness: 0.5,
-            metalness: 0.1,
-            emissive: colorHex,
-            emissiveIntensity: 0.1
+            roughness: 0.8,
+            metalness: 0.0
         });
         const head = new THREE.Mesh(headGeo, headMat);
-        head.position.y = 2.7;
+        head.position.y = 2.1;
         head.castShadow = true;
         group.add(head);
 
-        // Eyes
-        const eyeGeo = new THREE.SphereGeometry(0.08, 8, 8);
-        const eyeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const pupilGeo = new THREE.SphereGeometry(0.04, 8, 8);
-        const pupilMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
+        // Eyes — simple black dots (Metapa-style)
+        const eyeGeo = new THREE.SphereGeometry(0.06, 8, 8);
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x333333 });
 
-        [-0.15, 0.15].forEach(offsetX => {
+        [-0.18, 0.18].forEach(offsetX => {
             const eye = new THREE.Mesh(eyeGeo, eyeMat);
-            eye.position.set(offsetX, 2.8, 0.38);
+            eye.position.set(offsetX, 2.15, 0.58);
             group.add(eye);
-            const pupil = new THREE.Mesh(pupilGeo, pupilMat);
-            pupil.position.set(offsetX, 2.8, 0.42);
-            group.add(pupil);
         });
 
-        // Arms (capsule shape)
-        const armGeo = this._createCapsuleGeo(0.15, 0.6, 4, 8);
-        const armMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.6 });
-        [-0.7, 0.7].forEach(offsetX => {
+        // Cheek blush — soft pink circles
+        const blushGeo = new THREE.SphereGeometry(0.08, 8, 8);
+        const blushMat = new THREE.MeshBasicMaterial({
+            color: 0xf8bbd0,
+            transparent: true,
+            opacity: 0.5
+        });
+        [-0.32, 0.32].forEach(offsetX => {
+            const blush = new THREE.Mesh(blushGeo, blushMat);
+            blush.position.set(offsetX, 2.0, 0.55);
+            group.add(blush);
+        });
+
+        // Small stubby arms
+        const armGeo = new THREE.SphereGeometry(0.15, 8, 8);
+        armGeo.scale(1, 1.3, 0.8);
+        const armMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.85 });
+        [-0.6, 0.6].forEach(offsetX => {
             const arm = new THREE.Mesh(armGeo, armMat);
-            arm.position.set(offsetX, 1.5, 0);
+            arm.position.set(offsetX, 1.0, 0);
             arm.castShadow = true;
             arm.userData.isArm = true;
             arm.userData.side = offsetX > 0 ? 1 : -1;
             group.add(arm);
         });
 
-        // Name label (using sprite)
-        const nameLabel = this._createTextSprite(name, colorHex);
-        nameLabel.position.y = 3.5;
+        // Small feet
+        const footGeo = new THREE.SphereGeometry(0.15, 8, 8);
+        footGeo.scale(1.2, 0.5, 1.3);
+        const footMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.85 });
+        [-0.2, 0.2].forEach(offsetX => {
+            const foot = new THREE.Mesh(footGeo, footMat);
+            foot.position.set(offsetX, 0.08, 0.05);
+            group.add(foot);
+        });
+
+        // Name label
+        const nameLabel = this._createTextSprite(name);
+        nameLabel.position.y = 3.1;
         nameLabel.scale.set(2, 0.5, 1);
         group.add(nameLabel);
 
-        // Emote label (hidden by default)
-        const emoteLabel = this._createTextSprite('', 0xffffff);
-        emoteLabel.position.y = 4.0;
+        // Emote label
+        const emoteLabel = this._createTextSprite('');
+        emoteLabel.position.y = 3.6;
         emoteLabel.scale.set(1.5, 0.5, 1);
         emoteLabel.visible = false;
         group.add(emoteLabel);
 
-        // Shadow disc
-        const shadowGeo = new THREE.CircleGeometry(0.6, 16);
+        // Soft shadow disc
+        const shadowGeo = new THREE.CircleGeometry(0.5, 16);
         const shadowMat = new THREE.MeshBasicMaterial({
             color: 0x000000,
             transparent: true,
-            opacity: 0.3
+            opacity: 0.12
         });
         const shadow = new THREE.Mesh(shadowGeo, shadowMat);
         shadow.rotation.x = -Math.PI / 2;
@@ -133,13 +112,8 @@ const Avatar = {
         scene.add(group);
 
         const avatarData = {
-            group,
-            nameLabel,
-            emoteLabel,
-            config,
-            targetX: x || 0,
-            targetZ: z || 0,
-            targetRotY: 0,
+            group, nameLabel, emoteLabel, config,
+            targetX: x || 0, targetZ: z || 0, targetRotY: 0,
             velocity: { x: 0, z: 0 },
             isMoving: false,
             bobPhase: Math.random() * Math.PI * 2,
@@ -166,34 +140,27 @@ const Avatar = {
         ctx.fill();
     },
 
-    _createTextSprite(text, bgColor) {
+    _createTextSprite(text) {
         const canvas = document.createElement('canvas');
         canvas.width = 256;
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
-
         ctx.clearRect(0, 0, 256, 64);
 
         if (text) {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-            this._drawRoundedRect(ctx, 8, 8, 240, 48, 8);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            this._drawRoundedRect(ctx, 16, 8, 224, 48, 24);
 
-            ctx.font = 'bold 24px sans-serif';
+            ctx.font = 'bold 22px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#5a5a6a';
             ctx.fillText(text, 128, 32);
         }
 
         const texture = new THREE.CanvasTexture(canvas);
         texture.needsUpdate = true;
-
-        const mat = new THREE.SpriteMaterial({
-            map: texture,
-            transparent: true,
-            depthTest: false
-        });
-
+        const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
         return new THREE.Sprite(mat);
     },
 
@@ -202,15 +169,15 @@ const Avatar = {
         canvas.width = 256;
         canvas.height = 64;
         const ctx = canvas.getContext('2d');
-
         ctx.clearRect(0, 0, 256, 64);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        this._drawRoundedRect(ctx, 8, 8, 240, 48, 8);
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        this._drawRoundedRect(ctx, 16, 8, 224, 48, 24);
 
         ctx.font = '28px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#5a5a6a';
         ctx.fillText(text, 128, 32);
 
         sprite.material.map.dispose();
@@ -229,13 +196,7 @@ const Avatar = {
         const avatar = this.avatars.get(id);
         if (!avatar) return;
 
-        const emoteMap = {
-            wave: '&#128075;',
-            dance: '&#128131;',
-            sit: '&#129682;',
-            clap: '&#128079;'
-        };
-
+        const emoteMap = { wave: '\u{1F44B}', dance: '\u{1F483}', sit: '\u{1FA91}', clap: '\u{1F44F}' };
         const emoji = emoteMap[emoteType] || emoteType;
         avatar.currentEmote = emoteType;
         avatar.emoteLabel.visible = true;
@@ -252,32 +213,27 @@ const Avatar = {
         this.avatars.forEach((avatar) => {
             const g = avatar.group;
 
-            // Smooth position interpolation
             g.position.x = Utils.lerp(g.position.x, avatar.targetX, 0.1);
             g.position.z = Utils.lerp(g.position.z, avatar.targetZ, 0.1);
 
-            // Smooth rotation
-            const targetRot = avatar.targetRotY;
-            let diff = targetRot - g.rotation.y;
+            let diff = avatar.targetRotY - g.rotation.y;
             while (diff > Math.PI) diff -= Math.PI * 2;
             while (diff < -Math.PI) diff += Math.PI * 2;
             g.rotation.y += diff * 0.1;
 
-            // Walking bob
             const speed = Math.abs(avatar.velocity.x) + Math.abs(avatar.velocity.z);
             if (speed > 0.01) {
-                avatar.bobPhase += dt * 8;
-                g.position.y = Math.abs(Math.sin(avatar.bobPhase)) * 0.15;
+                avatar.bobPhase += dt * 6;
+                // Cute gentle bounce
+                g.position.y = Math.abs(Math.sin(avatar.bobPhase)) * 0.12;
 
-                // Arm swing
                 g.children.forEach(child => {
                     if (child.userData.isArm) {
-                        child.rotation.x = Math.sin(avatar.bobPhase) * 0.5 * child.userData.side;
+                        child.rotation.x = Math.sin(avatar.bobPhase) * 0.4 * child.userData.side;
                     }
                 });
             } else {
                 g.position.y = Utils.lerp(g.position.y, 0, 0.1);
-                // Idle breathing
                 g.children.forEach(child => {
                     if (child.userData.isArm) {
                         child.rotation.x = Utils.lerp(child.rotation.x, 0, 0.05);
@@ -285,15 +241,14 @@ const Avatar = {
                 });
             }
 
-            // Dance emote
+            // Dance: gentle sway
             if (avatar.currentEmote === 'dance') {
-                g.rotation.y += 0.05;
-                g.position.y = Math.abs(Math.sin(time * 5)) * 0.3;
+                g.rotation.y += 0.04;
+                g.position.y = Math.abs(Math.sin(time * 4)) * 0.2;
             }
 
-            // Sit emote
             if (avatar.currentEmote === 'sit') {
-                g.position.y = -0.3;
+                g.position.y = -0.25;
             }
         });
     }

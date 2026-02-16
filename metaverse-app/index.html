@@ -5,51 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Metaverse Web App</title>
+    <title>METAPA - バーチャル空間</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <!-- Lobby Screen -->
     <div id="lobby-screen">
         <div class="lobby-container">
-            <h1 class="lobby-title">METAVERSE</h1>
-            <p class="lobby-subtitle">Virtual World Explorer</p>
+            <h1 class="lobby-title">METAPA</h1>
+            <p class="lobby-subtitle">みんなで楽しむバーチャル空間</p>
             <div class="lobby-form">
-                <label for="username-input">Display Name</label>
-                <input type="text" id="username-input" placeholder="Enter your name..." maxlength="20" autocomplete="off">
-                <label for="avatar-color">Avatar Color</label>
+                <label for="username-input">なまえ</label>
+                <input type="text" id="username-input" placeholder="なまえを入れてね..." maxlength="20" autocomplete="off">
+                <label for="avatar-color">アバターのいろ</label>
                 <div class="color-picker" id="avatar-color">
-                    <div class="color-option selected" data-color="#4fc3f7" style="background:#4fc3f7"></div>
-                    <div class="color-option" data-color="#ef5350" style="background:#ef5350"></div>
-                    <div class="color-option" data-color="#66bb6a" style="background:#66bb6a"></div>
-                    <div class="color-option" data-color="#ffa726" style="background:#ffa726"></div>
-                    <div class="color-option" data-color="#ab47bc" style="background:#ab47bc"></div>
-                    <div class="color-option" data-color="#ec407a" style="background:#ec407a"></div>
+                    <div class="color-option selected" data-color="#f8bbd0" style="background:#f8bbd0"></div>
+                    <div class="color-option" data-color="#b2dfdb" style="background:#b2dfdb"></div>
+                    <div class="color-option" data-color="#fff9c4" style="background:#fff9c4"></div>
+                    <div class="color-option" data-color="#c5cae9" style="background:#c5cae9"></div>
+                    <div class="color-option" data-color="#ffe0b2" style="background:#ffe0b2"></div>
+                    <div class="color-option" data-color="#d1c4e9" style="background:#d1c4e9"></div>
+                    <div class="color-option" data-color="#b3e5fc" style="background:#b3e5fc"></div>
+                    <div class="color-option" data-color="#c8e6c9" style="background:#c8e6c9"></div>
                 </div>
-                <label for="room-select">Room</label>
+                <label for="room-select">おへや</label>
                 <div class="room-grid" id="room-select">
                     <div class="room-card selected" data-room="plaza">
                         <div class="room-icon">&#127963;</div>
-                        <div class="room-name">Plaza</div>
-                        <div class="room-desc">Open gathering space</div>
+                        <div class="room-name">ひろば</div>
+                        <div class="room-desc">みんなが集まる広場</div>
                     </div>
                     <div class="room-card" data-room="gallery">
                         <div class="room-icon">&#127912;</div>
-                        <div class="room-name">Gallery</div>
-                        <div class="room-desc">Art exhibition hall</div>
+                        <div class="room-name">ギャラリー</div>
+                        <div class="room-desc">アートの展示ホール</div>
                     </div>
                     <div class="room-card" data-room="garden">
                         <div class="room-icon">&#127795;</div>
-                        <div class="room-name">Garden</div>
-                        <div class="room-desc">Tranquil nature park</div>
+                        <div class="room-name">ガーデン</div>
+                        <div class="room-desc">やすらぎの自然公園</div>
                     </div>
                     <div class="room-card" data-room="lounge">
                         <div class="room-icon">&#9749;</div>
-                        <div class="room-name">Lounge</div>
-                        <div class="room-desc">Cozy hangout spot</div>
+                        <div class="room-name">ラウンジ</div>
+                        <div class="room-desc">くつろぎのスペース</div>
                     </div>
                 </div>
-                <button id="enter-btn" class="enter-button">Enter World</button>
+                <button id="enter-btn" class="enter-button">はいる</button>
             </div>
         </div>
     </div>

@@ -1,12 +1,12 @@
 /* ========================================
-   minimap.js — Top-down minimap renderer
+   minimap.js — Pastel minimap renderer
    ======================================== */
 
 const Minimap = {
     canvas: null,
     ctx: null,
     visible: false,
-    scale: 2.2, // pixels per world unit
+    scale: 2.2,
 
     init() {
         this.canvas = document.getElementById('minimap-canvas');
@@ -21,50 +21,38 @@ const Minimap = {
     draw(playerAvatar, npcPositions, roomConfig) {
         if (!this.visible || !this.ctx) return;
 
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-        const cx = w / 2;
-        const cy = h / 2;
+        const w = this.canvas.width, h = this.canvas.height;
+        const cx = w / 2, cy = h / 2;
 
-        // Clear
-        this.ctx.fillStyle = 'rgba(10, 10, 30, 0.85)';
+        // Soft background
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
         this.ctx.fillRect(0, 0, w, h);
 
         // Room boundary
-        const roomPixels = World.ROOM_SIZE * this.scale;
-        this.ctx.strokeStyle = 'rgba(100, 140, 255, 0.3)';
+        const roomPx = World.ROOM_SIZE * this.scale;
+        this.ctx.strokeStyle = 'rgba(165, 214, 167, 0.35)';
         this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(
-            cx - roomPixels / 2,
-            cy - roomPixels / 2,
-            roomPixels,
-            roomPixels
-        );
+        this.ctx.strokeRect(cx - roomPx / 2, cy - roomPx / 2, roomPx, roomPx);
 
         // Grid
-        this.ctx.strokeStyle = 'rgba(100, 140, 255, 0.08)';
-        const gridStep = 10 * this.scale;
-        for (let gx = cx - roomPixels / 2; gx <= cx + roomPixels / 2; gx += gridStep) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(gx, cy - roomPixels / 2);
-            this.ctx.lineTo(gx, cy + roomPixels / 2);
-            this.ctx.stroke();
+        this.ctx.strokeStyle = 'rgba(165, 214, 167, 0.1)';
+        const step = 10 * this.scale;
+        for (let gx = cx - roomPx / 2; gx <= cx + roomPx / 2; gx += step) {
+            this.ctx.beginPath(); this.ctx.moveTo(gx, cy - roomPx / 2);
+            this.ctx.lineTo(gx, cy + roomPx / 2); this.ctx.stroke();
         }
-        for (let gy = cy - roomPixels / 2; gy <= cy + roomPixels / 2; gy += gridStep) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(cx - roomPixels / 2, gy);
-            this.ctx.lineTo(cx + roomPixels / 2, gy);
-            this.ctx.stroke();
+        for (let gy = cy - roomPx / 2; gy <= cy + roomPx / 2; gy += step) {
+            this.ctx.beginPath(); this.ctx.moveTo(cx - roomPx / 2, gy);
+            this.ctx.lineTo(cx + roomPx / 2, gy); this.ctx.stroke();
         }
 
         const px = playerAvatar ? playerAvatar.group.position.x : 0;
         const pz = playerAvatar ? playerAvatar.group.position.z : 0;
 
-        // NPC dots
+        // NPC dots — pastel colors
         npcPositions.forEach(npc => {
             const nx = cx + (npc.x - px) * this.scale;
             const ny = cy + (npc.z - pz) * this.scale;
-
             if (nx >= 0 && nx <= w && ny >= 0 && ny <= h) {
                 this.ctx.fillStyle = npc.color;
                 this.ctx.beginPath();
@@ -73,29 +61,25 @@ const Minimap = {
             }
         });
 
-        // Player dot (center with direction indicator)
-        this.ctx.fillStyle = '#4fc3f7';
+        // Player dot — soft green
+        this.ctx.fillStyle = '#81c784';
         this.ctx.beginPath();
         this.ctx.arc(cx, cy, 4, 0, Math.PI * 2);
         this.ctx.fill();
 
-        // Player direction arrow
+        // Direction arrow
         if (playerAvatar) {
             const rot = playerAvatar.group.rotation.y;
-            const arrowLen = 10;
-            this.ctx.strokeStyle = '#4fc3f7';
+            this.ctx.strokeStyle = '#81c784';
             this.ctx.lineWidth = 2;
             this.ctx.beginPath();
             this.ctx.moveTo(cx, cy);
-            this.ctx.lineTo(
-                cx + Math.sin(rot) * arrowLen,
-                cy + Math.cos(rot) * arrowLen
-            );
+            this.ctx.lineTo(cx + Math.sin(rot) * 10, cy + Math.cos(rot) * 10);
             this.ctx.stroke();
         }
 
-        // Legend
-        this.ctx.fillStyle = 'rgba(200, 200, 220, 0.5)';
+        // Label
+        this.ctx.fillStyle = 'rgba(140, 140, 160, 0.5)';
         this.ctx.font = '10px sans-serif';
         this.ctx.fillText('MAP', 6, 14);
     }
