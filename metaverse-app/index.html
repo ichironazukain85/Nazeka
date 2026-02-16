@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metaverse Web App</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Lobby Screen -->
+    <div id="lobby-screen">
+        <div class="lobby-container">
+            <h1 class="lobby-title">METAVERSE</h1>
+            <p class="lobby-subtitle">Virtual World Explorer</p>
+            <div class="lobby-form">
+                <label for="username-input">Display Name</label>
+                <input type="text" id="username-input" placeholder="Enter your name..." maxlength="20" autocomplete="off">
+                <label for="avatar-color">Avatar Color</label>
+                <div class="color-picker" id="avatar-color">
+                    <div class="color-option selected" data-color="#4fc3f7" style="background:#4fc3f7"></div>
+                    <div class="color-option" data-color="#ef5350" style="background:#ef5350"></div>
+                    <div class="color-option" data-color="#66bb6a" style="background:#66bb6a"></div>
+                    <div class="color-option" data-color="#ffa726" style="background:#ffa726"></div>
+                    <div class="color-option" data-color="#ab47bc" style="background:#ab47bc"></div>
+                    <div class="color-option" data-color="#ec407a" style="background:#ec407a"></div>
+                </div>
+                <label for="room-select">Room</label>
+                <div class="room-grid" id="room-select">
+                    <div class="room-card selected" data-room="plaza">
+                        <div class="room-icon">&#127963;</div>
+                        <div class="room-name">Plaza</div>
+                        <div class="room-desc">Open gathering space</div>
+                    </div>
+                    <div class="room-card" data-room="gallery">
+                        <div class="room-icon">&#127912;</div>
+                        <div class="room-name">Gallery</div>
+                        <div class="room-desc">Art exhibition hall</div>
+                    </div>
+                    <div class="room-card" data-room="garden">
+                        <div class="room-icon">&#127795;</div>
+                        <div class="room-name">Garden</div>
+                        <div class="room-desc">Tranquil nature park</div>
+                    </div>
+                    <div class="room-card" data-room="lounge">
+                        <div class="room-icon">&#9749;</div>
+                        <div class="room-name">Lounge</div>
+                        <div class="room-desc">Cozy hangout spot</div>
+                    </div>
+                </div>
+                <button id="enter-btn" class="enter-button">Enter World</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D World -->
+    <div id="world-screen" class="hidden">
+        <canvas id="metaverse-canvas"></canvas>
+
+        <!-- HUD -->
+        <div id="hud">
+            <div id="hud-top-left">
+                <div id="room-label"></div>
+                <div id="user-count">0 online</div>
+            </div>
+            <div id="hud-top-right">
+                <button id="btn-minimap" class="hud-btn" title="Toggle Minimap">Map</button>
+                <button id="btn-emote" class="hud-btn" title="Emotes">Emote</button>
+                <button id="btn-exit" class="hud-btn" title="Exit to Lobby">Exit</button>
+            </div>
+            <div id="hud-bottom">
+                <div id="controls-hint">WASD: Move &nbsp;|&nbsp; Mouse: Look &nbsp;|&nbsp; Space: Jump &nbsp;|&nbsp; Enter: Chat</div>
+            </div>
+        </div>
+
+        <!-- Chat -->
+        <div id="chat-panel">
+            <div id="chat-messages"></div>
+            <div id="chat-input-row">
+                <input type="text" id="chat-input" placeholder="Type a message..." maxlength="200" autocomplete="off">
+                <button id="chat-send-btn">Send</button>
+            </div>
+        </div>
+
+        <!-- Minimap -->
+        <canvas id="minimap-canvas" class="hidden" width="200" height="200"></canvas>
+
+        <!-- Emote Picker -->
+        <div id="emote-picker" class="hidden">
+            <div class="emote-option" data-emote="wave">&#128075; Wave</div>
+            <div class="emote-option" data-emote="dance">&#128131; Dance</div>
+            <div class="emote-option" data-emote="sit">&#129682; Sit</div>
+            <div class="emote-option" data-emote="clap">&#128079; Clap</div>
+        </div>
+    </div>
+
+    <!-- Three.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/avatar.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/npc.js"></script>
+    <script src="js/minimap.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
