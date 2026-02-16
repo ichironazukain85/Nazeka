@@ -16,9 +16,11 @@ const App = {
     roomConfig: null,
 
     isRunning: false,
+    teleportFadeEl: null,
 
     init() {
         this._setupLobby();
+        this._createTeleportOverlay();
     },
 
     // ── Lobby ────────────────────────────
@@ -60,6 +62,13 @@ const App = {
                 this._enterWorld();
             }
         });
+    },
+
+    _createTeleportOverlay() {
+        this.teleportFadeEl = document.createElement('div');
+        this.teleportFadeEl.id = 'teleport-fade';
+        this.teleportFadeEl.className = 'hidden';
+        document.body.appendChild(this.teleportFadeEl);
     },
 
     // ── World Entry ──────────────────────
@@ -146,6 +155,7 @@ const App = {
         Controls.init(this.camera, canvas);
         Touch.init();
         Minimap.init();
+        Interaction.init(this.camera, canvas);
 
         Chat.init((text) => {
             Chat.addMessage(this.playerName, text, this.playerColor, false);
@@ -160,6 +170,11 @@ const App = {
     _buildWorld() {
         this.roomConfig = World.build(this.scene, this.currentRoom);
         document.getElementById('room-label').textContent = this.roomConfig.name;
+
+        // Initialize sky, particles, and portals
+        Sky.init(this.scene);
+        Particles.init(this.scene, this.currentRoom);
+        Portals.init(this.scene, this.currentRoom);
     },
 
     _spawnPlayer() {
@@ -186,6 +201,75 @@ const App = {
     _updateUserCount() {
         const total = 1 + NPC.getCount();
         document.getElementById('user-count').textContent = `${total} online`;
+    },
+
+    // ── Room Teleportation ─────────────
+
+    _teleportToRoom(targetRoom) {
+        if (Portals.cooldown) return;
+        Portals.cooldown = true;
+
+        // Fade to black
+        this.teleportFadeEl.classList.remove('hidden');
+        this.teleportFadeEl.classList.add('fade-in');
+
+        setTimeout(() => {
+            // Cleanup current room
+            this._cleanupRoom();
+
+            // Switch room
+            this.currentRoom = targetRoom;
+
+            // Rebuild
+            this._buildWorld();
+            this._respawnPlayer();
+            this._spawnNPCs();
+
+            Chat.addSystemMessage(`Teleported to ${this.roomConfig.name}!`);
+
+            // Fade back in
+            this.teleportFadeEl.classList.remove('fade-in');
+            this.teleportFadeEl.classList.add('fade-out');
+
+            setTimeout(() => {
+                this.teleportFadeEl.classList.add('hidden');
+                this.teleportFadeEl.classList.remove('fade-out');
+                Portals.cooldown = false;
+            }, 600);
+        }, 500);
+    },
+
+    _cleanupRoom() {
+        NPC.cleanup(this.scene);
+        Avatar.remove(this.scene, this.playerId);
+        Avatar.avatars.clear();
+        Sky.cleanup(this.scene);
+        Particles.cleanup(this.scene);
+        Portals.cleanup(this.scene);
+
+        if (this.scene) {
+            // Remove world objects group
+            if (World.objectsGroup) {
+                this.scene.remove(World.objectsGroup);
+                World.objectsGroup = null;
+            }
+        }
+    },
+
+    _respawnPlayer() {
+        this.playerAvatar = Avatar.create(this.scene, {
+            id: this.playerId,
+            name: this.playerName,
+            color: this.playerColor,
+            x: 0,
+            z: 5
+        });
+
+        // Reset camera
+        Controls.yaw = 0;
+        Controls.pitch = 0.3;
+        Controls.playerY = 0;
+        Controls.isJumping = false;
     },
 
     // ── HUD ──────────────────────────────
@@ -221,9 +305,8 @@ const App = {
         this.isRunning = false;
 
         // Cleanup
-        NPC.cleanup(this.scene);
-        Avatar.remove(this.scene, this.playerId);
-        Avatar.avatars.clear();
+        this._cleanupRoom();
+        Interaction.cleanup();
 
         if (this.renderer) {
             this.renderer.dispose();
@@ -264,7 +347,15 @@ const App = {
         Avatar.update(time, dt);
         NPC.update(dt, time);
         World.update(time);
+        Sky.update(time, this.scene, this.roomConfig);
+        Particles.update(time);
         Minimap.draw(this.playerAvatar, NPC.getPositions(), this.roomConfig);
+
+        // Check portal teleportation
+        const targetRoom = Portals.update(time, this.playerAvatar);
+        if (targetRoom) {
+            this._teleportToRoom(targetRoom);
+        }
 
         // Render
         this.renderer.render(this.scene, this.camera);

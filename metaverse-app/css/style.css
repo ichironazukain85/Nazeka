@@ -732,3 +732,147 @@ body {
         font-size: 0.7rem;
     }
 }
+
+/* ── Teleport Fade Overlay ────────────── */
+
+#teleport-fade {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 9000;
+    pointer-events: none;
+    opacity: 0;
+}
+
+#teleport-fade.fade-in {
+    animation: teleport-fade-in 0.5s ease forwards;
+}
+
+#teleport-fade.fade-out {
+    animation: teleport-fade-out 0.6s ease forwards;
+}
+
+@keyframes teleport-fade-in {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes teleport-fade-out {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ── NPC Info Panel ───────────────────── */
+
+#npc-info-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(15, 15, 40, 0.92);
+    border: 1px solid rgba(130, 100, 255, 0.4);
+    border-radius: 14px;
+    padding: 20px 24px;
+    min-width: 280px;
+    max-width: 340px;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px rgba(100, 70, 255, 0.15);
+    animation: panel-appear 0.2s ease-out;
+}
+
+@keyframes panel-appear {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.npc-info-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.npc-info-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.npc-info-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    flex: 1;
+}
+
+.npc-info-close {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.npc-info-close:hover {
+    color: #fff;
+}
+
+.npc-info-dialogue {
+    font-size: 0.9rem;
+    color: #bbb;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    border-left: 3px solid rgba(130, 100, 255, 0.5);
+}
+
+.npc-info-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.npc-action-btn {
+    flex: 1;
+    padding: 10px 8px;
+    background: rgba(100, 70, 255, 0.15);
+    border: 1px solid rgba(130, 100, 255, 0.3);
+    border-radius: 8px;
+    color: #ccbbff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.npc-action-btn:hover {
+    background: rgba(100, 70, 255, 0.3);
+    border-color: rgba(130, 100, 255, 0.6);
+    color: #fff;
+}
+
+.npc-action-btn:active {
+    transform: translateY(1px);
+}
+
+@media (max-width: 768px) {
+    #npc-info-panel {
+        min-width: 0;
+        width: 85%;
+        max-width: 320px;
+        padding: 16px 18px;
+    }
+
+    .npc-action-btn {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+    }
+}
