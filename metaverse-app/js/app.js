@@ -68,6 +68,7 @@ const App = {
         document.getElementById('lobby-screen').classList.add('hidden');
         document.getElementById('world-screen').classList.remove('hidden');
 
+        Touch.detect();
         this._initThree();
         this._initSystems();
         this._buildWorld();
@@ -97,8 +98,8 @@ const App = {
             alpha: false
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.renderer.shadowMap.enabled = true;
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, Touch.isMobile ? 1.5 : 2));
+        this.renderer.shadowMap.enabled = !Touch.isMobile;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -117,11 +118,17 @@ const App = {
     _initSystems() {
         const canvas = document.getElementById('metaverse-canvas');
         Controls.init(this.camera, canvas);
+        Touch.init();
         Minimap.init();
 
         Chat.init((text) => {
             Chat.addMessage(this.playerName, text, this.playerColor, false);
         });
+
+        // On mobile, start with chat collapsed
+        if (Touch.isMobile) {
+            document.getElementById('chat-panel').classList.add('chat-collapsed');
+        }
     },
 
     _buildWorld() {
@@ -227,6 +234,7 @@ const App = {
 
         // Update systems
         Controls.update(dt, this.playerAvatar);
+        Touch.update(dt, this.playerAvatar);
         Avatar.update(time, dt);
         NPC.update(dt, time);
         World.update(time);

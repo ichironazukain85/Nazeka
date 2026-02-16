@@ -44,29 +44,32 @@ const Controls = {
             this.keys[e.code] = false;
         });
 
-        canvas.addEventListener('click', () => {
-            if (!this._isChatFocused()) {
-                canvas.requestPointerLock();
-            }
-        });
+        // Desktop-only: pointer lock
+        if (!Touch.isMobile) {
+            canvas.addEventListener('click', () => {
+                if (!this._isChatFocused()) {
+                    canvas.requestPointerLock();
+                }
+            });
 
-        document.addEventListener('pointerlockchange', () => {
-            this.isPointerLocked = document.pointerLockElement === canvas;
-        });
+            document.addEventListener('pointerlockchange', () => {
+                this.isPointerLocked = document.pointerLockElement === canvas;
+            });
 
-        document.addEventListener('mousemove', (e) => {
-            if (this.isPointerLocked) {
-                this.mouseDeltaX = e.movementX;
-                this.mouseDeltaY = e.movementY;
-            }
-        });
+            document.addEventListener('mousemove', (e) => {
+                if (this.isPointerLocked) {
+                    this.mouseDeltaX = e.movementX;
+                    this.mouseDeltaY = e.movementY;
+                }
+            });
 
-        // Scroll to zoom
-        canvas.addEventListener('wheel', (e) => {
-            this.cameraDistance += e.deltaY * 0.01;
-            this.cameraDistance = Utils.clamp(this.cameraDistance, 3, 20);
-            e.preventDefault();
-        }, { passive: false });
+            // Scroll to zoom
+            canvas.addEventListener('wheel', (e) => {
+                this.cameraDistance += e.deltaY * 0.01;
+                this.cameraDistance = Utils.clamp(this.cameraDistance, 3, 20);
+                e.preventDefault();
+            }, { passive: false });
+        }
     },
 
     _isChatFocused() {
@@ -76,8 +79,8 @@ const Controls = {
     update(dt, playerAvatar) {
         if (!playerAvatar) return;
 
-        // Camera rotation
-        if (this.isPointerLocked) {
+        // Camera rotation (desktop only — mobile handled by Touch.update)
+        if (!Touch.isMobile && this.isPointerLocked) {
             this.yaw -= this.mouseDeltaX * this.LOOK_SENSITIVITY;
             this.pitch -= this.mouseDeltaY * this.LOOK_SENSITIVITY;
             this.pitch = Utils.clamp(this.pitch, -0.5, 1.2);
@@ -85,46 +88,44 @@ const Controls = {
         this.mouseDeltaX = 0;
         this.mouseDeltaY = 0;
 
-        // Movement
-        let moveX = 0;
-        let moveZ = 0;
+        // Keyboard movement (on mobile, Touch.update handles movement)
+        if (!Touch.isMobile) {
+            let moveX = 0;
+            let moveZ = 0;
 
-        if (!this._isChatFocused()) {
-            if (this.keys['KeyW'] || this.keys['ArrowUp'])    moveZ -= 1;
-            if (this.keys['KeyS'] || this.keys['ArrowDown'])  moveZ += 1;
-            if (this.keys['KeyA'] || this.keys['ArrowLeft'])  moveX -= 1;
-            if (this.keys['KeyD'] || this.keys['ArrowRight']) moveX += 1;
-        }
+            if (!this._isChatFocused()) {
+                if (this.keys['KeyW'] || this.keys['ArrowUp'])    moveZ -= 1;
+                if (this.keys['KeyS'] || this.keys['ArrowDown'])  moveZ += 1;
+                if (this.keys['KeyA'] || this.keys['ArrowLeft'])  moveX -= 1;
+                if (this.keys['KeyD'] || this.keys['ArrowRight']) moveX += 1;
+            }
 
-        const hasInput = moveX !== 0 || moveZ !== 0;
+            const hasInput = moveX !== 0 || moveZ !== 0;
 
-        if (hasInput) {
-            // Normalize
-            const len = Math.sqrt(moveX * moveX + moveZ * moveZ);
-            moveX /= len;
-            moveZ /= len;
+            if (hasInput) {
+                const len = Math.sqrt(moveX * moveX + moveZ * moveZ);
+                moveX /= len;
+                moveZ /= len;
 
-            // Rotate relative to camera yaw
-            const sin = Math.sin(this.yaw);
-            const cos = Math.cos(this.yaw);
-            const worldX = moveX * cos - moveZ * sin;
-            const worldZ = moveX * sin + moveZ * cos;
+                const sin = Math.sin(this.yaw);
+                const cos = Math.cos(this.yaw);
+                const worldX = moveX * cos - moveZ * sin;
+                const worldZ = moveX * sin + moveZ * cos;
 
-            playerAvatar.targetX += worldX * this.MOVE_SPEED * dt;
-            playerAvatar.targetZ += worldZ * this.MOVE_SPEED * dt;
+                playerAvatar.targetX += worldX * this.MOVE_SPEED * dt;
+                playerAvatar.targetZ += worldZ * this.MOVE_SPEED * dt;
 
-            // Boundary clamping
-            playerAvatar.targetX = Utils.clamp(playerAvatar.targetX, -this.BOUNDARY, this.BOUNDARY);
-            playerAvatar.targetZ = Utils.clamp(playerAvatar.targetZ, -this.BOUNDARY, this.BOUNDARY);
+                playerAvatar.targetX = Utils.clamp(playerAvatar.targetX, -this.BOUNDARY, this.BOUNDARY);
+                playerAvatar.targetZ = Utils.clamp(playerAvatar.targetZ, -this.BOUNDARY, this.BOUNDARY);
 
-            // Face direction
-            playerAvatar.targetRotY = Math.atan2(worldX, worldZ);
+                playerAvatar.targetRotY = Math.atan2(worldX, worldZ);
 
-            playerAvatar.velocity.x = worldX * this.MOVE_SPEED;
-            playerAvatar.velocity.z = worldZ * this.MOVE_SPEED;
-        } else {
-            playerAvatar.velocity.x = 0;
-            playerAvatar.velocity.z = 0;
+                playerAvatar.velocity.x = worldX * this.MOVE_SPEED;
+                playerAvatar.velocity.z = worldZ * this.MOVE_SPEED;
+            } else {
+                playerAvatar.velocity.x = 0;
+                playerAvatar.velocity.z = 0;
+            }
         }
 
         // Jump physics

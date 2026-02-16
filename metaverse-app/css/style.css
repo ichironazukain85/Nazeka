@@ -426,3 +426,261 @@ body {
     0%   { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-40px); }
 }
+
+/* ── Mobile Controls ───────────────────── */
+
+#mobile-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 30;
+}
+
+#joystick-area {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 140px;
+    height: 140px;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+#joystick {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#joystick-knob {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(79, 195, 247, 0.5);
+    border: 2px solid rgba(79, 195, 247, 0.8);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: none;
+}
+
+#mobile-right-buttons {
+    position: absolute;
+    bottom: 24px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: auto;
+}
+
+.mobile-action-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    color: #ddd;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-action-btn:active {
+    background: rgba(79, 195, 247, 0.3);
+    border-color: rgba(79, 195, 247, 0.6);
+}
+
+/* ── Chat collapsed state (mobile) ─────── */
+
+#chat-panel.chat-collapsed #chat-messages {
+    display: none;
+}
+
+#chat-panel.chat-collapsed #chat-input-row {
+    display: none;
+}
+
+/* ── Responsive / Mobile ───────────────── */
+
+@media (max-width: 768px) {
+    /* Lobby */
+    .lobby-container {
+        padding: 24px 20px;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .lobby-title {
+        font-size: 1.8rem;
+        letter-spacing: 0.2em;
+    }
+
+    .lobby-subtitle {
+        margin-bottom: 16px;
+        font-size: 0.85rem;
+    }
+
+    .lobby-form label {
+        margin-top: 12px;
+        margin-bottom: 6px;
+    }
+
+    .room-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .room-card {
+        padding: 10px 6px;
+    }
+
+    .room-icon {
+        font-size: 1.4rem;
+    }
+
+    .room-name {
+        font-size: 0.85rem;
+    }
+
+    .room-desc {
+        font-size: 0.65rem;
+    }
+
+    .enter-button {
+        margin-top: 18px;
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    /* HUD */
+    #hud-top-left {
+        top: 10px;
+        left: 10px;
+    }
+
+    #room-label {
+        font-size: 1rem;
+    }
+
+    #hud-top-right {
+        top: 10px;
+        right: 10px;
+    }
+
+    .hud-btn {
+        padding: 10px 12px;
+        font-size: 0.75rem;
+        min-height: 38px;
+    }
+
+    #hud-bottom {
+        display: none;
+    }
+
+    /* Chat */
+    #chat-panel {
+        left: 10px;
+        right: 10px;
+        bottom: 170px;
+        width: auto;
+        max-height: 200px;
+    }
+
+    #chat-messages {
+        max-height: 130px;
+        padding: 8px;
+    }
+
+    .chat-msg {
+        font-size: 0.78rem;
+    }
+
+    #chat-input {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    #chat-send-btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+
+    /* Minimap */
+    #minimap-canvas {
+        width: 120px;
+        height: 120px;
+        bottom: 170px;
+        right: 10px;
+    }
+
+    /* Emote picker */
+    #emote-picker {
+        top: auto;
+        bottom: 170px;
+        right: 10px;
+    }
+
+    .emote-option {
+        padding: 12px 16px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .lobby-container {
+        padding: 18px 14px;
+    }
+
+    .lobby-title {
+        font-size: 1.5rem;
+    }
+
+    .color-option {
+        width: 32px;
+        height: 32px;
+    }
+
+    .room-grid {
+        gap: 6px;
+    }
+
+    .room-card {
+        padding: 8px 4px;
+    }
+
+    #joystick {
+        width: 100px;
+        height: 100px;
+    }
+
+    #joystick-knob {
+        width: 40px;
+        height: 40px;
+    }
+
+    .mobile-action-btn {
+        width: 56px;
+        height: 56px;
+        font-size: 0.7rem;
+    }
+}

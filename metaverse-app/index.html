@@ -2,7 +2,9 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Metaverse Web App</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -91,6 +93,19 @@
             <div class="emote-option" data-emote="sit">&#129682; Sit</div>
             <div class="emote-option" data-emote="clap">&#128079; Clap</div>
         </div>
+
+        <!-- Mobile Controls (hidden by default, shown on touch devices) -->
+        <div id="mobile-controls" class="hidden">
+            <div id="joystick-area">
+                <div id="joystick">
+                    <div id="joystick-knob"></div>
+                </div>
+            </div>
+            <div id="mobile-right-buttons">
+                <button id="btn-jump" class="mobile-action-btn">Jump</button>
+                <button id="btn-chat-toggle" class="mobile-action-btn">Chat</button>
+            </div>
+        </div>
     </div>
 
     <!-- Three.js from CDN -->
@@ -99,6 +114,7 @@
     <script src="js/world.js"></script>
     <script src="js/avatar.js"></script>
     <script src="js/controls.js"></script>
+    <script src="js/touch.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/npc.js"></script>
     <script src="js/minimap.js"></script>
