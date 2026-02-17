@@ -55,16 +55,6 @@ const Avatar = {
             group.add(eye);
         });
 
-        // Eyebrows — thin lines for style
-        const browGeo = new THREE.BoxGeometry(0.05, 0.008, 0.01);
-        const browMat = new THREE.MeshBasicMaterial({ color: hairColor });
-        [-0.055, 0.055].forEach(offsetX => {
-            const brow = new THREE.Mesh(browGeo, browMat);
-            brow.position.set(offsetX, 2.25, 0.155);
-            brow.rotation.z = offsetX > 0 ? -0.1 : 0.1;
-            group.add(brow);
-        });
-
         // Mouth — subtle
         const mouthGeo = new THREE.SphereGeometry(0.012, 6, 6);
         mouthGeo.scale(1.2, 0.4, 0.4);
