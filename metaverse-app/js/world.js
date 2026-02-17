@@ -138,17 +138,17 @@ const World = {
         // Central fountain
         this.objectsGroup.add(this._mesh(
             new THREE.CylinderGeometry(4, 4.5, 1.2, 24),
-            { color: 0xd8d0c4, roughness: 0.8 },
+            { color: 0xa09080, roughness: 0.7 },
             { y: 0.6, shadow: true }
         ));
         this.objectsGroup.add(this._mesh(
             new THREE.CylinderGeometry(0.6, 0.8, 3, 12),
-            { color: 0xe0d8cc },
+            { color: 0xb0a090, roughness: 0.7 },
             { y: 2.7, shadow: true }
         ));
         this.objectsGroup.add(this._mesh(
             new THREE.TorusGeometry(2.5, 0.3, 8, 32),
-            { color: 0x90caf9, transparent: true, opacity: 0.5 },
+            { color: 0x5090d0, transparent: true, opacity: 0.6 },
             { y: 1.3, rx: -Math.PI / 2 }
         ));
 
@@ -159,7 +159,7 @@ const World = {
         }
 
         // Pastel buildings
-        const colors = [0xf8bbd0, 0xb2dfdb, 0xc5cae9, 0xfff9c4, 0xffe0b2, 0xd1c4e9];
+        const colors = [0xe87098, 0x68b8a8, 0x8898d0, 0xe8d868, 0xe8a860, 0xa888c8];
         for (let i = 0; i < 6; i++) {
             const a = (i / 6) * Math.PI * 2, d = 22;
             this._createBuilding(Math.sin(a) * d, Math.cos(a) * d, colors[i], a);
@@ -173,7 +173,7 @@ const World = {
     },
 
     _buildGallery() {
-        const wallMat = new THREE.MeshStandardMaterial({ color: 0xf5f0ea, roughness: 0.9 });
+        const wallMat = new THREE.MeshStandardMaterial({ color: 0xc8beb0, roughness: 0.8 });
         [
             { x: -10, z: 0, ry: 0, w: 20 },
             { x: 10, z: 0, ry: 0, w: 20 },
@@ -187,18 +187,18 @@ const World = {
             this.objectsGroup.add(wall);
         });
 
-        const artColors = [0xf48fb1, 0x81c784, 0x64b5f6, 0xffd54f, 0xce93d8, 0x4dd0e1, 0xffab91, 0xa5d6a7];
+        const artColors = [0xe06888, 0x58a860, 0x4898d8, 0xe8b828, 0xa870b8, 0x30b0a8, 0xe88058, 0x78b878];
         for (let i = 0; i < 8; i++) {
             const side = i < 4 ? -1 : 1;
             const idx = i % 4;
             this.objectsGroup.add(this._mesh(
                 new THREE.BoxGeometry(0.08, 3, 3.5),
-                { color: 0xffffff },
+                { color: 0xb0a090, roughness: 0.7 },
                 { x: side * 10 + side * -0.2, y: 3.5, z: -6 + idx * 4 }
             ));
             this.objectsGroup.add(this._mesh(
                 new THREE.BoxGeometry(0.05, 2.2, 2.8),
-                { color: artColors[i], emissive: artColors[i], emissiveIntensity: 0.1 },
+                { color: artColors[i], emissive: artColors[i], emissiveIntensity: 0.15 },
                 { x: side * 10 + side * -0.25, y: 3.5, z: -6 + idx * 4 }
             ));
         }
@@ -209,11 +209,11 @@ const World = {
             new THREE.TorusKnotGeometry(0.7, 0.3, 64, 8),
             new THREE.DodecahedronGeometry(1, 0)
         ];
-        const sColors = [0xf8bbd0, 0xb2dfdb, 0xc5cae9, 0xfff9c4];
+        const sColors = [0xe87098, 0x68b8a8, 0x8898d0, 0xe8d060];
         shapes.forEach((geo, i) => {
             this.objectsGroup.add(this._mesh(
                 new THREE.BoxGeometry(1.5, 1.5, 1.5),
-                { color: 0xffffff, roughness: 0.9 },
+                { color: 0xc0b8a8, roughness: 0.8 },
                 { x: -6 + i * 4, y: 0.75, z: 0, shadow: true }
             ));
             const s = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
@@ -238,14 +238,14 @@ const World = {
 
         this.objectsGroup.add(this._mesh(
             new THREE.CircleGeometry(6, 32),
-            { color: 0x90caf9, transparent: true, opacity: 0.6, roughness: 0.1 },
+            { color: 0x4090c8, transparent: true, opacity: 0.7, roughness: 0.1 },
             { x: 15, y: 0.05, z: 15, rx: -Math.PI / 2 }
         ));
 
         for (let i = 0; i < 8; i++) {
             this.objectsGroup.add(this._mesh(
                 new THREE.CylinderGeometry(0.8, 0.9, 0.15, 8),
-                { color: 0xe0d8cc },
+                { color: 0x988870, roughness: 0.7 },
                 { x: -20 + i * 5, y: 0.08, z: -5 + Math.sin(i) * 3 }
             ));
         }
@@ -269,14 +269,14 @@ const World = {
     },
 
     _buildLounge() {
-        const sofaColors = [0xf8bbd0, 0xb2dfdb, 0xc5cae9, 0xffe0b2];
+        const sofaColors = [0xe07098, 0x68b8a8, 0x8898d0, 0xe8a860];
         for (let i = 0; i < 4; i++) {
             const a = (i / 4) * Math.PI * 2 + Math.PI / 4, d = 12;
             const cx = Math.sin(a) * d, cz = Math.cos(a) * d;
 
             const sofa = new THREE.Mesh(
                 new THREE.TorusGeometry(3, 0.8, 8, 16, Math.PI),
-                new THREE.MeshStandardMaterial({ color: sofaColors[i], roughness: 0.9 })
+                new THREE.MeshStandardMaterial({ color: sofaColors[i], roughness: 0.85 })
             );
             sofa.rotation.set(-Math.PI / 2, 0, a);
             sofa.position.set(cx, 0.8, cz);
@@ -285,14 +285,14 @@ const World = {
 
             this.objectsGroup.add(this._mesh(
                 new THREE.CylinderGeometry(1, 1, 0.5, 16),
-                { color: 0xffffff, roughness: 0.8 },
+                { color: 0xa88858, roughness: 0.7 },
                 { x: cx, y: 0.25, z: cz, shadow: true }
             ));
         }
 
         this.objectsGroup.add(this._mesh(
             new THREE.CylinderGeometry(2, 2.2, 0.4, 16),
-            { color: 0xf5f0ea },
+            { color: 0x987858, roughness: 0.7 },
             { y: 0.2 }
         ));
 
@@ -316,13 +316,13 @@ const World = {
             const bx = Math.sin(a) * d, bz = Math.cos(a) * d;
             const shelf = this._mesh(
                 new THREE.BoxGeometry(6, 5, 1),
-                { color: 0xe8dcd0, roughness: 0.9 },
+                { color: 0x906838, roughness: 0.8 },
                 { x: bx, y: 2.5, z: bz, shadow: true }
             );
             shelf.rotation.y = a;
             this.objectsGroup.add(shelf);
 
-            const bookColors = [0xf8bbd0, 0xb2dfdb, 0xc5cae9, 0xfff9c4, 0xd1c4e9];
+            const bookColors = [0xe06888, 0x58a888, 0x7880c0, 0xd8c040, 0x9870b0];
             for (let j = 0; j < 5; j++) {
                 const book = this._mesh(
                     new THREE.BoxGeometry(0.5, 0.8 + Math.random() * 0.4, 0.7),
@@ -360,12 +360,12 @@ const World = {
 
     _createBench(x, z, rotation) {
         const g = new THREE.Group();
-        const seat = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 1), new THREE.MeshStandardMaterial({ color: 0xe0d4c0 }));
+        const seat = new THREE.Mesh(new THREE.BoxGeometry(3, 0.2, 1), new THREE.MeshStandardMaterial({ color: 0xa07840, roughness: 0.7 }));
         seat.position.y = 0.7; g.add(seat);
-        const back = new THREE.Mesh(new THREE.BoxGeometry(3, 1, 0.15), new THREE.MeshStandardMaterial({ color: 0xe0d4c0 }));
+        const back = new THREE.Mesh(new THREE.BoxGeometry(3, 1, 0.15), new THREE.MeshStandardMaterial({ color: 0xa07840, roughness: 0.7 }));
         back.position.set(0, 1.2, -0.45); g.add(back);
         [-1, 1].forEach(s => {
-            const leg = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.7, 0.8), new THREE.MeshStandardMaterial({ color: 0xd0c8b8 }));
+            const leg = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.7, 0.8), new THREE.MeshStandardMaterial({ color: 0x706050, roughness: 0.8 }));
             leg.position.set(s * 1.2, 0.35, 0); g.add(leg);
         });
         g.position.set(x, 0, z);
@@ -375,17 +375,17 @@ const World = {
 
     _createBuilding(x, z, color, angle) {
         const g = new THREE.Group();
-        const body = new THREE.Mesh(new THREE.BoxGeometry(5, 5, 5), new THREE.MeshStandardMaterial({ color, roughness: 0.9 }));
+        const body = new THREE.Mesh(new THREE.BoxGeometry(5, 5, 5), new THREE.MeshStandardMaterial({ color, roughness: 0.8 }));
         body.position.y = 2.5; body.castShadow = true; g.add(body);
 
-        const rc = new THREE.Color(color).multiplyScalar(0.85);
-        const roof = new THREE.Mesh(new THREE.ConeGeometry(4, 2.5, 4), new THREE.MeshStandardMaterial({ color: rc, roughness: 0.9 }));
+        const rc = new THREE.Color(color).multiplyScalar(0.7);
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(4, 2.5, 4), new THREE.MeshStandardMaterial({ color: rc, roughness: 0.8 }));
         roof.position.y = 6.2; roof.rotation.y = Math.PI / 4; roof.castShadow = true; g.add(roof);
 
-        const door = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0xe8dcd0 }));
+        const door = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0x886040, roughness: 0.7 }));
         door.position.set(0, 1, 2.55); g.add(door);
 
-        const win = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.1), new THREE.MeshStandardMaterial({ color: 0xfff8e1, emissive: 0xfff8e1, emissiveIntensity: 0.2 }));
+        const win = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.1), new THREE.MeshStandardMaterial({ color: 0xa0d8f0, emissive: 0x80c0e0, emissiveIntensity: 0.25 }));
         win.position.set(0, 3.5, 2.55); g.add(win);
 
         g.position.set(x, 0, z);
@@ -394,8 +394,8 @@ const World = {
     },
 
     _createLampPost(x, z) {
-        this.objectsGroup.add(this._mesh(new THREE.CylinderGeometry(0.08, 0.1, 4, 8), { color: 0xd0c8b8 }, { x, y: 2, z }));
-        this.objectsGroup.add(this._mesh(new THREE.SphereGeometry(0.35, 12, 12), { color: 0xfff8e1, emissive: 0xfff3e0, emissiveIntensity: 0.5 }, { x, y: 4.2, z }));
+        this.objectsGroup.add(this._mesh(new THREE.CylinderGeometry(0.08, 0.1, 4, 8), { color: 0x686058, roughness: 0.7 }, { x, y: 2, z }));
+        this.objectsGroup.add(this._mesh(new THREE.SphereGeometry(0.35, 12, 12), { color: 0xe8d088, emissive: 0xe8c870, emissiveIntensity: 0.5 }, { x, y: 4.2, z }));
         const l = new THREE.PointLight(0xfff3e0, 0.3, 8);
         l.position.set(x, 4.2, z);
         this.objectsGroup.add(l);
@@ -403,15 +403,15 @@ const World = {
 
     _createTree(x, z) {
         const h = Utils.randomRange(2.5, 4.5);
-        this.objectsGroup.add(this._mesh(new THREE.CylinderGeometry(0.25, 0.35, h, 8), { color: 0xc8b898 }, { x, y: h / 2, z, shadow: true }));
+        this.objectsGroup.add(this._mesh(new THREE.CylinderGeometry(0.25, 0.35, h, 8), { color: 0x7a5c30, roughness: 0.8 }, { x, y: h / 2, z, shadow: true }));
         const r = Utils.randomRange(2, 3.5);
-        const cc = [0xa5d6a7, 0xc5e1a5, 0x81c784, 0xaed581];
-        this.objectsGroup.add(this._mesh(new THREE.SphereGeometry(r, 12, 12), { color: cc[Math.floor(Math.random() * cc.length)], roughness: 0.9 }, { x, y: h + r * 0.4, z, shadow: true }));
+        const cc = [0x58a058, 0x78a848, 0x48905c, 0x68a838];
+        this.objectsGroup.add(this._mesh(new THREE.SphereGeometry(r, 12, 12), { color: cc[Math.floor(Math.random() * cc.length)], roughness: 0.85 }, { x, y: h + r * 0.4, z, shadow: true }));
     },
 
     _createFlower(x, z) {
-        this.objectsGroup.add(this._mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.4, 4), { color: 0x81c784 }, { x, y: 0.2, z }));
-        const pc = [0xf48fb1, 0xce93d8, 0xfff176, 0xff8a65, 0x80deea, 0xf8bbd0];
+        this.objectsGroup.add(this._mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.4, 4), { color: 0x48884c }, { x, y: 0.2, z }));
+        const pc = [0xe06080, 0xb060c0, 0xe0c830, 0xe86838, 0x50b8c8, 0xe87098];
         this.objectsGroup.add(this._mesh(new THREE.SphereGeometry(0.15, 6, 6), { color: pc[Math.floor(Math.random() * pc.length)] }, { x, y: 0.45, z }));
     },
 
