@@ -131,17 +131,17 @@ const Sky = {
     _updateLighting(scene, sunY, phase) {
         scene.traverse((child) => {
             if (child.isDirectionalLight) {
-                child.intensity = Math.max(0.15, sunY) * 0.7;
-                if (phase > 0.15 && phase < 0.35) child.color.setRGB(1.0, 0.82, 0.65);
-                else if (phase > 0.65 && phase < 0.85) child.color.setRGB(1.0, 0.85, 0.7);
-                else child.color.setRGB(1.0, 0.96, 0.9);
+                child.intensity = Math.max(0.1, sunY) * 0.6;
+                if (phase > 0.15 && phase < 0.35) child.color.setRGB(1.0, 0.78, 0.55);
+                else if (phase > 0.65 && phase < 0.85) child.color.setRGB(1.0, 0.82, 0.62);
+                else child.color.setRGB(1.0, 0.95, 0.88);
                 child.position.set(Math.sin(this.timeOfDay % (Math.PI * 2)) * 50, Math.max(10, Math.cos(this.timeOfDay % (Math.PI * 2)) * 50), 20);
             }
             if (child.isAmbientLight) {
-                child.intensity = Utils.lerp(0.5, 0.15, Math.max(0, -sunY));
+                child.intensity = Utils.lerp(0.4, 0.1, Math.max(0, -sunY));
             }
             if (child.isHemisphereLight) {
-                child.intensity = Utils.lerp(0.35, 0.1, Math.max(0, -sunY));
+                child.intensity = Utils.lerp(0.3, 0.08, Math.max(0, -sunY));
             }
         });
     },

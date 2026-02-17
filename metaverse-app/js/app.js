@@ -125,7 +125,7 @@ const App = {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.0;
+        this.renderer.toneMappingExposure = 0.85;
 
         this.clock = new THREE.Clock();
 
@@ -205,11 +205,21 @@ const App = {
 
     // ── Room Teleportation ─────────────
 
-    _teleportToRoom(targetRoom) {
-        if (Portals.cooldown) return;
-        Portals.cooldown = true;
+    _isTeleporting: false,
 
-        // Fade to black
+    _teleportToRoom(targetRoom) {
+        if (Portals.cooldown || this._isTeleporting) return;
+        Portals.cooldown = true;
+        this._isTeleporting = true;
+
+        // Release pointer lock and clear key state before teleport
+        if (document.pointerLockElement) {
+            document.exitPointerLock();
+        }
+        Controls.keys = {};
+        Controls.isPointerLocked = false;
+
+        // Fade to white
         this.teleportFadeEl.classList.remove('hidden');
         this.teleportFadeEl.classList.add('fade-in');
 
@@ -220,8 +230,9 @@ const App = {
             // Switch room
             this.currentRoom = targetRoom;
 
-            // Rebuild
+            // Rebuild (Portals.init will be called, but we override cooldown after)
             this._buildWorld();
+            Portals.cooldown = true; // Keep cooldown active until fade-out completes
             this._respawnPlayer();
             this._spawnNPCs();
 
@@ -235,6 +246,7 @@ const App = {
                 this.teleportFadeEl.classList.add('hidden');
                 this.teleportFadeEl.classList.remove('fade-out');
                 Portals.cooldown = false;
+                this._isTeleporting = false;
             }, 600);
         }, 500);
     },

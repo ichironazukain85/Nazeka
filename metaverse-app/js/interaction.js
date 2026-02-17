@@ -34,14 +34,25 @@ const Interaction = {
         ]
     },
 
-    init(camera, canvas) {
-        this.raycaster = new THREE.Raycaster();
-        this._createInfoPanel();
+    _camera: null,
+    _initialized: false,
 
-        // Click/tap handler
+    init(camera, canvas) {
+        this._camera = camera;
+        this.raycaster = new THREE.Raycaster();
+
+        if (!this.infoPanel) {
+            this._createInfoPanel();
+        }
+
+        // Prevent duplicate event listener registration on re-entry
+        if (this._initialized) return;
+        this._initialized = true;
+
+        // Click/tap handler — uses this._camera so it always uses current camera
         const handler = (e) => {
-            if (Touch.isMobile) return; // Mobile uses tap
-            this._onClick(e, camera);
+            if (Touch.isMobile) return;
+            this._onClick(e, this._camera);
         };
 
         canvas.addEventListener('click', handler);
@@ -51,7 +62,7 @@ const Interaction = {
             canvas.addEventListener('touchend', (e) => {
                 if (e.changedTouches.length === 1) {
                     const touch = e.changedTouches[0];
-                    this._onTap(touch.clientX, touch.clientY, camera);
+                    this._onTap(touch.clientX, touch.clientY, this._camera);
                 }
             });
         }
@@ -199,9 +210,6 @@ const Interaction = {
 
     cleanup() {
         this.hideInfo();
-        if (this.infoPanel && this.infoPanel.parentNode) {
-            this.infoPanel.parentNode.removeChild(this.infoPanel);
-        }
-        this.infoPanel = null;
+        this._camera = null;
     }
 };

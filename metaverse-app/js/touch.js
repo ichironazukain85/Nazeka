@@ -35,8 +35,12 @@ const Touch = {
         return this.isMobile;
     },
 
+    _initialized: false,
+
     init() {
         if (!this.isMobile) return;
+        if (this._initialized) return;
+        this._initialized = true;
 
         this.joystickEl = document.getElementById('joystick');
         this.joystickKnobEl = document.getElementById('joystick-knob');

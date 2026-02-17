@@ -25,10 +25,15 @@ const Controls = {
     JUMP_FORCE: 8,
     GRAVITY: 20,
     BOUNDARY: 38,
+    _initialized: false,
 
     init(camera, canvas) {
         this.camera = camera;
         this.keys = {};
+
+        // Prevent duplicate event listener registration on re-entry
+        if (this._initialized) return;
+        this._initialized = true;
 
         document.addEventListener('keydown', (e) => {
             this.keys[e.code] = true;
