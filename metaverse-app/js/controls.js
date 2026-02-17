@@ -149,13 +149,13 @@ const Controls = {
         const pz = playerAvatar.group.position.z;
 
         const camX = px + Math.sin(this.yaw) * this.cameraDistance * Math.cos(this.pitch);
-        const camY = 2 + this.playerY + this.cameraDistance * Math.sin(this.pitch);
+        const camY = 1.5 + this.playerY + this.cameraDistance * Math.sin(this.pitch);
         const camZ = pz + Math.cos(this.yaw) * this.cameraDistance * Math.cos(this.pitch);
 
         this.camera.position.set(camX, camY, camZ);
         this.camera.lookAt(
             px + this.cameraLookOffset.x,
-            2 + this.playerY + this.cameraLookOffset.y,
+            1.5 + this.playerY + this.cameraLookOffset.y,
             pz + this.cameraLookOffset.z
         );
 

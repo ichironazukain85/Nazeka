@@ -1,6 +1,6 @@
 /* ========================================
-   avatar.js — Human-shaped avatar with walking animation
-   Cute chibi proportions: big head, short body, visible legs
+   avatar.js — Metapa-style human avatar with walking animation
+   Compact proportions: small round head, rounded body, stubby limbs
    ======================================== */
 
 const Avatar = {
@@ -16,75 +16,75 @@ const Avatar = {
         const group = new THREE.Group();
 
         // ── Head ────────────────────────────
-        const headGeo = new THREE.SphereGeometry(0.48, 16, 16);
+        const headGeo = new THREE.SphereGeometry(0.28, 16, 16);
         const headMat = new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.65 });
         const head = new THREE.Mesh(headGeo, headMat);
-        head.position.y = 2.25;
+        head.position.y = 1.58;
         head.castShadow = true;
         group.add(head);
 
         // Hair — cap on top of head
-        const hairGeo = new THREE.SphereGeometry(0.50, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.55);
+        const hairGeo = new THREE.SphereGeometry(0.30, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.55);
         const hairMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.75 });
         const hair = new THREE.Mesh(hairGeo, hairMat);
-        hair.position.y = 2.28;
+        hair.position.y = 1.61;
         hair.castShadow = true;
         group.add(hair);
 
         // Eyes — simple black dots
-        const eyeGeo = new THREE.SphereGeometry(0.045, 8, 8);
+        const eyeGeo = new THREE.SphereGeometry(0.035, 8, 8);
         const eyeMat = new THREE.MeshBasicMaterial({ color: 0x222222 });
-        [-0.14, 0.14].forEach(offsetX => {
+        [-0.09, 0.09].forEach(offsetX => {
             const eye = new THREE.Mesh(eyeGeo, eyeMat);
-            eye.position.set(offsetX, 2.28, 0.43);
+            eye.position.set(offsetX, 1.60, 0.25);
             group.add(eye);
         });
 
         // Cheek blush
-        const blushGeo = new THREE.SphereGeometry(0.055, 8, 8);
+        const blushGeo = new THREE.SphereGeometry(0.04, 8, 8);
         const blushMat = new THREE.MeshBasicMaterial({
             color: 0xf8a0a0, transparent: true, opacity: 0.45
         });
-        [-0.26, 0.26].forEach(offsetX => {
+        [-0.17, 0.17].forEach(offsetX => {
             const blush = new THREE.Mesh(blushGeo, blushMat);
-            blush.position.set(offsetX, 2.18, 0.40);
+            blush.position.set(offsetX, 1.52, 0.24);
             group.add(blush);
         });
 
         // Mouth — small curve
-        const mouthGeo = new THREE.SphereGeometry(0.025, 6, 6);
-        mouthGeo.scale(2.0, 0.6, 0.5);
+        const mouthGeo = new THREE.SphereGeometry(0.02, 6, 6);
+        mouthGeo.scale(1.5, 0.5, 0.5);
         const mouthMat = new THREE.MeshBasicMaterial({ color: 0xc07060 });
         const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-        mouth.position.set(0, 2.14, 0.44);
+        mouth.position.set(0, 1.49, 0.26);
         group.add(mouth);
 
         // ── Torso ───────────────────────────
-        const torsoGeo = new THREE.CylinderGeometry(0.3, 0.25, 0.7, 12);
+        const torsoGeo = new THREE.CylinderGeometry(0.25, 0.23, 0.60, 12);
         const torsoMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.7 });
         const torso = new THREE.Mesh(torsoGeo, torsoMat);
-        torso.position.y = 1.45;
+        torso.position.y = 1.05;
         torso.castShadow = true;
         group.add(torso);
 
         // ── Arms (pivot-based for swing animation) ──
         [-1, 1].forEach(side => {
             const armPivot = new THREE.Group();
-            armPivot.position.set(side * 0.38, 1.72, 0);
+            armPivot.position.set(side * 0.33, 1.28, 0);
 
             // Upper arm
-            const armGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.45, 8);
+            const armGeo = new THREE.CylinderGeometry(0.07, 0.06, 0.38, 8);
             const armMat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.7 });
             const arm = new THREE.Mesh(armGeo, armMat);
-            arm.position.y = -0.25;
+            arm.position.y = -0.22;
             arm.castShadow = true;
             armPivot.add(arm);
 
             // Hand
-            const handGeo = new THREE.SphereGeometry(0.07, 8, 8);
+            const handGeo = new THREE.SphereGeometry(0.06, 8, 8);
             const handMat = new THREE.MeshStandardMaterial({ color: skinColor, roughness: 0.65 });
             const hand = new THREE.Mesh(handGeo, handMat);
-            hand.position.y = -0.52;
+            hand.position.y = -0.44;
             armPivot.add(hand);
 
             armPivot.userData.isArm = true;
@@ -95,21 +95,21 @@ const Avatar = {
         // ── Legs (pivot-based for walk animation) ──
         [-1, 1].forEach(side => {
             const legPivot = new THREE.Group();
-            legPivot.position.set(side * 0.13, 1.08, 0);
+            legPivot.position.set(side * 0.12, 0.65, 0);
 
             // Thigh/leg
-            const legGeo = new THREE.CylinderGeometry(0.1, 0.09, 0.75, 8);
+            const legGeo = new THREE.CylinderGeometry(0.09, 0.08, 0.50, 8);
             const legMat = new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.7 });
             const leg = new THREE.Mesh(legGeo, legMat);
-            leg.position.y = -0.4;
+            leg.position.y = -0.28;
             leg.castShadow = true;
             legPivot.add(leg);
 
             // Foot/shoe
-            const footGeo = new THREE.BoxGeometry(0.14, 0.1, 0.24);
+            const footGeo = new THREE.BoxGeometry(0.12, 0.09, 0.20);
             const footMat = new THREE.MeshStandardMaterial({ color: shoeColor, roughness: 0.7 });
             const foot = new THREE.Mesh(footGeo, footMat);
-            foot.position.set(0, -0.82, 0.04);
+            foot.position.set(0, -0.58, 0.03);
             legPivot.add(foot);
 
             legPivot.userData.isLeg = true;
@@ -119,19 +119,19 @@ const Avatar = {
 
         // ── Name label ──────────────────────
         const nameLabel = this._createTextSprite(name);
-        nameLabel.position.y = 3.1;
+        nameLabel.position.y = 2.20;
         nameLabel.scale.set(2, 0.5, 1);
         group.add(nameLabel);
 
         // ── Emote label ─────────────────────
         const emoteLabel = this._createTextSprite('');
-        emoteLabel.position.y = 3.6;
+        emoteLabel.position.y = 2.55;
         emoteLabel.scale.set(1.5, 0.5, 1);
         emoteLabel.visible = false;
         group.add(emoteLabel);
 
         // ── Shadow disc ─────────────────────
-        const shadowGeo = new THREE.CircleGeometry(0.4, 16);
+        const shadowGeo = new THREE.CircleGeometry(0.35, 16);
         const shadowMat = new THREE.MeshBasicMaterial({
             color: 0x000000, transparent: true, opacity: 0.15
         });
@@ -262,16 +262,16 @@ const Avatar = {
                 avatar.walkPhase += dt * 8;
 
                 // Subtle body bob
-                g.position.y = Math.abs(Math.sin(avatar.walkPhase * 2)) * 0.05;
+                g.position.y = Math.abs(Math.sin(avatar.walkPhase * 2)) * 0.04;
 
                 g.children.forEach(child => {
                     if (child.userData.isLeg) {
                         // Legs swing forward/backward alternately
-                        child.rotation.x = Math.sin(avatar.walkPhase) * 0.6 * child.userData.side;
+                        child.rotation.x = Math.sin(avatar.walkPhase) * 0.5 * child.userData.side;
                     }
                     if (child.userData.isArm) {
                         // Arms swing opposite to legs
-                        child.rotation.x = Math.sin(avatar.walkPhase) * 0.45 * -child.userData.side;
+                        child.rotation.x = Math.sin(avatar.walkPhase) * 0.4 * -child.userData.side;
                     }
                 });
             } else {
@@ -288,21 +288,21 @@ const Avatar = {
             if (avatar.currentEmote === 'dance') {
                 avatar.walkPhase += dt * 6;
                 g.rotation.y += 0.04;
-                g.position.y = Math.abs(Math.sin(time * 4)) * 0.15;
+                g.position.y = Math.abs(Math.sin(time * 4)) * 0.12;
                 g.children.forEach(child => {
                     if (child.userData.isArm) {
-                        child.rotation.x = Math.sin(time * 5 + child.userData.side) * 0.8;
+                        child.rotation.x = Math.sin(time * 5 + child.userData.side) * 0.7;
                         child.rotation.z = Math.sin(time * 3) * 0.3 * child.userData.side;
                     }
                     if (child.userData.isLeg) {
-                        child.rotation.x = Math.sin(time * 4 + child.userData.side) * 0.3;
+                        child.rotation.x = Math.sin(time * 4 + child.userData.side) * 0.25;
                     }
                 });
             }
 
             // Sit emote — bend legs forward
             if (avatar.currentEmote === 'sit') {
-                g.position.y = -0.4;
+                g.position.y = -0.3;
                 g.children.forEach(child => {
                     if (child.userData.isLeg) {
                         child.rotation.x = Utils.lerp(child.rotation.x, -Math.PI / 3, 0.1);
@@ -328,7 +328,7 @@ const Avatar = {
                 const clap = Math.sin(time * 8);
                 g.children.forEach(child => {
                     if (child.userData.isArm) {
-                        child.rotation.x = -0.8;
+                        child.rotation.x = -0.7;
                         child.rotation.z = clap * 0.3 * child.userData.side;
                     }
                 });
