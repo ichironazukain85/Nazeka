@@ -17,7 +17,7 @@ const Avatar = {
         bodyGeo.scale(1, 1.2, 0.9);
         const bodyMat = new THREE.MeshStandardMaterial({
             color: colorHex,
-            roughness: 0.85,
+            roughness: 0.7,
             metalness: 0.0
         });
         const body = new THREE.Mesh(bodyGeo, bodyMat);
@@ -29,7 +29,7 @@ const Avatar = {
         const headGeo = new THREE.SphereGeometry(0.65, 20, 20);
         const headMat = new THREE.MeshStandardMaterial({
             color: colorHex,
-            roughness: 0.8,
+            roughness: 0.65,
             metalness: 0.0
         });
         const head = new THREE.Mesh(headGeo, headMat);

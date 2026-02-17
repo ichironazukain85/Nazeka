@@ -10,10 +10,10 @@ const Sky = {
     sunMesh: null,
 
     SKY_COLORS: {
-        day:     { r: 0.78, g: 0.90, b: 0.97 },
-        sunset:  { r: 0.95, g: 0.75, b: 0.65 },
-        night:   { r: 0.20, g: 0.22, b: 0.35 },
-        dawn:    { r: 0.90, g: 0.80, b: 0.75 }
+        day:     { r: 0.60, g: 0.80, b: 0.95 },
+        sunset:  { r: 0.90, g: 0.65, b: 0.50 },
+        night:   { r: 0.12, g: 0.14, b: 0.28 },
+        dawn:    { r: 0.85, g: 0.70, b: 0.60 }
     },
 
     init(scene) {
@@ -33,7 +33,7 @@ const Sky = {
                         roughness: 1,
                         metalness: 0,
                         transparent: true,
-                        opacity: 0.7
+                        opacity: 0.45
                     })
                 );
                 puff.position.set(j * 3.5 - count, Utils.randomRange(-0.5, 0.5), Utils.randomRange(-1, 1));
@@ -91,7 +91,7 @@ const Sky = {
             // Cloud opacity based on time of day
             const nightness = Math.max(0, -sunY);
             cloud.children.forEach(puff => {
-                puff.material.opacity = Utils.lerp(0.7, 0.2, nightness);
+                puff.material.opacity = Utils.lerp(0.45, 0.15, nightness);
             });
         });
 
@@ -131,17 +131,17 @@ const Sky = {
     _updateLighting(scene, sunY, phase) {
         scene.traverse((child) => {
             if (child.isDirectionalLight) {
-                child.intensity = Math.max(0.2, sunY) * 0.9;
-                if (phase > 0.15 && phase < 0.35) child.color.setRGB(1.0, 0.85, 0.7);
-                else if (phase > 0.65 && phase < 0.85) child.color.setRGB(1.0, 0.88, 0.75);
-                else child.color.setRGB(1.0, 0.98, 0.93);
+                child.intensity = Math.max(0.15, sunY) * 0.7;
+                if (phase > 0.15 && phase < 0.35) child.color.setRGB(1.0, 0.82, 0.65);
+                else if (phase > 0.65 && phase < 0.85) child.color.setRGB(1.0, 0.85, 0.7);
+                else child.color.setRGB(1.0, 0.96, 0.9);
                 child.position.set(Math.sin(this.timeOfDay % (Math.PI * 2)) * 50, Math.max(10, Math.cos(this.timeOfDay % (Math.PI * 2)) * 50), 20);
             }
             if (child.isAmbientLight) {
-                child.intensity = Utils.lerp(1.2, 0.3, Math.max(0, -sunY));
+                child.intensity = Utils.lerp(0.5, 0.15, Math.max(0, -sunY));
             }
             if (child.isHemisphereLight) {
-                child.intensity = Utils.lerp(0.8, 0.2, Math.max(0, -sunY));
+                child.intensity = Utils.lerp(0.35, 0.1, Math.max(0, -sunY));
             }
         });
     },

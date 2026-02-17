@@ -10,38 +10,38 @@ const World = {
     rooms: {
         plaza: {
             name: 'ひろば',
-            groundColor: 0xe8ddd0,
-            skyColor: 0xc8e6f7,
-            fogColor: 0xc8e6f7,
-            ambientColor: 0xfff8f0,
-            sunColor: 0xfff5e6,
+            groundColor: 0xd4c8b8,
+            skyColor: 0xa8d4f0,
+            fogColor: 0xa8d4f0,
+            ambientColor: 0xfff0e0,
+            sunColor: 0xfff0d0,
             features: 'plaza'
         },
         gallery: {
             name: 'ギャラリー',
-            groundColor: 0xf0ece6,
-            skyColor: 0xe8e0f0,
-            fogColor: 0xe8e0f0,
-            ambientColor: 0xf8f4ff,
-            sunColor: 0xfff0ff,
+            groundColor: 0xe0d8ce,
+            skyColor: 0xd4c8e0,
+            fogColor: 0xd4c8e0,
+            ambientColor: 0xf0e8ff,
+            sunColor: 0xffe0ff,
             features: 'gallery'
         },
         garden: {
             name: 'ガーデン',
-            groundColor: 0xc8e6c0,
-            skyColor: 0xd4eef8,
-            fogColor: 0xd4eef8,
-            ambientColor: 0xf0fff0,
-            sunColor: 0xfff8e0,
+            groundColor: 0xa8d4a0,
+            skyColor: 0xb0daf0,
+            fogColor: 0xb0daf0,
+            ambientColor: 0xe0ffe0,
+            sunColor: 0xfff0c8,
             features: 'garden'
         },
         lounge: {
             name: 'ラウンジ',
-            groundColor: 0xe8dcd0,
-            skyColor: 0xf0e8dd,
-            fogColor: 0xf0e8dd,
-            ambientColor: 0xfff4e8,
-            sunColor: 0xffe8cc,
+            groundColor: 0xd8c8b8,
+            skyColor: 0xe0d4c4,
+            fogColor: 0xe0d4c4,
+            ambientColor: 0xffe8d0,
+            sunColor: 0xffd8b0,
             features: 'lounge'
         }
     },
@@ -57,12 +57,12 @@ const World = {
         this.objectsGroup = new THREE.Group();
 
         scene.background = new THREE.Color(config.skyColor);
-        scene.fog = new THREE.FogExp2(config.fogColor, 0.006);
+        scene.fog = new THREE.FogExp2(config.fogColor, 0.008);
 
-        const ambient = new THREE.AmbientLight(config.ambientColor, 1.2);
+        const ambient = new THREE.AmbientLight(config.ambientColor, 0.5);
         this.objectsGroup.add(ambient);
 
-        const sun = new THREE.DirectionalLight(config.sunColor, 0.9);
+        const sun = new THREE.DirectionalLight(config.sunColor, 0.7);
         sun.position.set(30, 50, 20);
         sun.castShadow = true;
         sun.shadow.mapSize.width = 1024;
@@ -75,7 +75,7 @@ const World = {
         sun.shadow.camera.bottom = -50;
         this.objectsGroup.add(sun);
 
-        const hemi = new THREE.HemisphereLight(0xddeeff, 0xf0e8d8, 0.8);
+        const hemi = new THREE.HemisphereLight(0xddeeff, 0xf0e8d8, 0.35);
         this.objectsGroup.add(hemi);
 
         const groundGeo = new THREE.PlaneGeometry(this.ROOM_SIZE, this.ROOM_SIZE);
@@ -89,9 +89,9 @@ const World = {
         ground.receiveShadow = true;
         this.objectsGroup.add(ground);
 
-        const gridHelper = new THREE.GridHelper(this.ROOM_SIZE, 20, 0xd8d0c4, 0xddd6ca);
+        const gridHelper = new THREE.GridHelper(this.ROOM_SIZE, 20, 0xc0b8a8, 0xc8c0b0);
         gridHelper.position.y = 0.01;
-        gridHelper.material.opacity = 0.15;
+        gridHelper.material.opacity = 0.2;
         gridHelper.material.transparent = true;
         this.objectsGroup.add(gridHelper);
 
