@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>スーパー・ジャンプアドベンチャー</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-wrap">
+    <canvas id="game" width="800" height="450"></canvas>
+
+    <!-- スタート画面 -->
+    <div id="start-screen" class="overlay">
+      <h1>スーパー<br>ジャンプアドベンチャー</h1>
+      <p class="sub">コインを集めてゴールの旗を目指そう！</p>
+      <div class="controls-help">
+        <p>← → / A D : 移動</p>
+        <p>スペース / ↑ / W : ジャンプ</p>
+        <p>敵を踏んで倒そう</p>
+      </div>
+      <button id="start-btn" class="btn">スタート</button>
+    </div>
+
+    <!-- クリア / ゲームオーバー画面 -->
+    <div id="end-screen" class="overlay hidden">
+      <h1 id="end-title">クリア！</h1>
+      <p id="end-msg" class="sub"></p>
+      <button id="restart-btn" class="btn">もう一度あそぶ</button>
+    </div>
+
+    <!-- モバイル操作ボタン -->
+    <div id="touch-controls" class="hidden">
+      <div class="pad">
+        <button class="tbtn" data-key="left">◀</button>
+        <button class="tbtn" data-key="right">▶</button>
+      </div>
+      <button class="tbtn jump" data-key="jump">JUMP</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

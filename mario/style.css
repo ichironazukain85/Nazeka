@@ -1,0 +1,114 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: #1a1a2e;
+  font-family: "Segoe UI", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#game-wrap {
+  position: relative;
+  width: 800px;
+  max-width: 100vw;
+  aspect-ratio: 800 / 450;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  background: #5c94fc;
+}
+
+/* オーバーレイ（スタート / 終了画面） */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background: rgba(10, 10, 30, 0.82);
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  z-index: 10;
+}
+
+.overlay h1 {
+  font-size: clamp(28px, 6vw, 52px);
+  line-height: 1.15;
+  text-shadow: 3px 3px 0 #e52521;
+  letter-spacing: 1px;
+}
+
+.overlay .sub {
+  font-size: clamp(14px, 2.6vw, 20px);
+  opacity: 0.9;
+}
+
+.controls-help {
+  font-size: clamp(12px, 2.2vw, 16px);
+  opacity: 0.8;
+  line-height: 1.8;
+}
+
+.btn {
+  margin-top: 8px;
+  padding: 14px 40px;
+  font-size: clamp(16px, 3vw, 22px);
+  font-weight: bold;
+  color: #fff;
+  background: #e52521;
+  border: 3px solid #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s;
+}
+.btn:hover { background: #ff4b3e; transform: scale(1.05); }
+.btn:active { transform: scale(0.97); }
+
+.hidden { display: none !important; }
+
+/* モバイル操作 */
+#touch-controls {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 16px 20px;
+  z-index: 9;
+  pointer-events: none;
+}
+#touch-controls .pad { display: flex; gap: 14px; }
+.tbtn {
+  pointer-events: auto;
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.tbtn.jump {
+  width: 84px;
+  height: 84px;
+  font-size: 18px;
+  background: rgba(229, 37, 33, 0.55);
+}
+.tbtn:active { background: rgba(255, 255, 255, 0.5); }
